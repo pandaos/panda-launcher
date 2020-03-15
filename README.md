@@ -1,0 +1,2 @@
+# flyma-launcher
+Application launcher
