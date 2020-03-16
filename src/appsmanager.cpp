@@ -72,7 +72,8 @@ void AppsManager::searchApp(const QString &keyword)
             const QString &comment = info.comment;
             const QString &name = info.name;
 
-            if (name.contains(keyword, Qt::CaseInsensitive)) {
+            if (name.contains(keyword, Qt::CaseInsensitive) ||
+                comment.contains(keyword, Qt::CaseInsensitive)) {
                 m_searchList.append(info);
             }
         }
