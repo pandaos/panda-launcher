@@ -26,6 +26,8 @@
 #include <QProcess>
 #include <QDebug>
 
+#include "apprunthread.h"
+
 AppsManager* AppsManager::instance()
 {
     static AppsManager manager;
@@ -54,7 +56,12 @@ void AppsManager::launchApp(const QModelIndex &index)
 {
     const QString &appExec = index.data(ListModel::AppExecRole).toString();
 
-    QProcess::startDetached(appExec);
+    AppRunThread *thread = new AppRunThread(appExec);
+    thread->start();
+
+    connect(thread, &AppRunThread::finished, thread, &AppRunThread::deleteLater);
+
+//    QProcess::startDetached(appExec);
 }
 
 void AppsManager::initData()
