@@ -22,6 +22,7 @@
 #include <QEvent>
 #include <QApplication>
 #include <QScreen>
+#include <QDebug>
 
 ListView::ListView(QWidget *parent)
     : QListView(parent)
@@ -56,6 +57,11 @@ bool ListView::eventFilter(QObject *object, QEvent *e)
 {
     if (object == viewport() && e->type() == QEvent::Paint) {
 //         fitToContent();
+    }
+
+    if (object == viewport() && e->type() == QEvent::MouseButtonRelease) {
+        emit requestHideLauncher();
+        return false;
     }
 
     return false;

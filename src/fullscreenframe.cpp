@@ -55,14 +55,6 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::ClickFocus);
 
-//    QPalette pal = this->palette();
-////    QColor windowColor("#EEEEEE");
-//    QColor windowColor = Qt::red;
-//    windowColor.setAlphaF(140);
-//    pal.setColor(QPalette::Window, windowColor);
-//    pal.setColor(QPalette::Base, windowColor);
-//    qApp->setPalette(pal);
-
     KWindowEffects::enableBlurBehind(winId(), true);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -82,10 +74,10 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
 
     initSize();
 
+    connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
-    connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
-
+    connect(m_listView, &ListView::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
     connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }
 

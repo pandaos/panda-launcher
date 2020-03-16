@@ -30,6 +30,9 @@ public:
     ListView(QWidget *parent = nullptr);
     ~ListView();
 
+signals:
+    void requestHideLauncher();
+
 protected:
     bool eventFilter(QObject *obj, QEvent *e) override;
 
