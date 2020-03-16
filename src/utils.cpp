@@ -18,6 +18,9 @@
  */
 
 #include "utils.h"
+#include <QApplication>
+#include <QImageReader>
+#include <QPixmap>
 
 Utils::Utils(QObject *parent)
     : QObject(parent)
@@ -38,4 +41,22 @@ QByteArray Utils::detectDesktopEnvironment()
     }
 
     return QByteArray("UNKNOWN");
+}
+
+QPixmap Utils::renderSVG(const QString &path, const QSize &size)
+{
+    const qreal devicePixelRatio = qApp->devicePixelRatio();
+    QImageReader reader;
+    QPixmap pixmap;
+    reader.setFileName(path);
+    if (reader.canRead()) {
+        reader.setScaledSize(size * devicePixelRatio);
+        pixmap = QPixmap::fromImage(reader.read());
+        pixmap.setDevicePixelRatio(devicePixelRatio);
+    }
+    else {
+        pixmap.load(path);
+    }
+
+    return pixmap;
 }

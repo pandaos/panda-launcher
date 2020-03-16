@@ -31,6 +31,7 @@ public:
     ~Utils();
 
     static QByteArray detectDesktopEnvironment();
+    static QPixmap renderSVG(const QString &path, const QSize &size);
 };
 
 #endif // MAINWINDOW_H

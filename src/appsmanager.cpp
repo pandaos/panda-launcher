@@ -94,6 +94,8 @@ void AppsManager::initData()
         appInfo.exec = appExec;
         appInfo.filePath = path;
         m_appList << appInfo;
+
+        qDebug() << appInfo.exec;
     }
 
     emit dataChanged();

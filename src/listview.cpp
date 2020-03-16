@@ -26,15 +26,18 @@ ListView::ListView(QWidget *parent)
     : QListView(parent)
 {
     viewport()->installEventFilter(this);
+    setAttribute(Qt::WA_TranslucentBackground);
 
     setFlow(QListView::LeftToRight);
     setLayoutMode(QListView::Batched);
     setResizeMode(QListView::Adjust);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     setFrameStyle(QFrame::NoFrame);
     setWrapping(true);
+
+    setStyleSheet("QListView { background-color: transparent;}");
 }
 
 ListView::~ListView()
@@ -44,7 +47,7 @@ ListView::~ListView()
 bool ListView::eventFilter(QObject *object, QEvent *e)
 {
     if (object == viewport() && e->type() == QEvent::Paint) {
-        // fitToContent();
+        fitToContent();
     }
 
     return false;
@@ -52,13 +55,9 @@ bool ListView::eventFilter(QObject *object, QEvent *e)
 
 void ListView::fitToContent()
 {
-    if (width() == contentsRect().width() &&
-        height() == contentsSize().height()) {
-        return;
-    }
+    const QSize size { contentsRect().width(), contentsSize().height() };
 
-    const int h = contentsSize().height();
+    if (size == rect().size()) return;
 
-    setFixedHeight(h < 0 ? 0 : h);
-    setFixedWidth(contentsRect().width());
+    setFixedSize(size);
 }

@@ -20,13 +20,14 @@
 #ifndef FULLSCREENFRAME_H
 #define FULLSCREENFRAME_H
 
-#include <QWidget>
+#include <QFrame>
 #include "listview.h"
 #include "listmodel.h"
 #include "itemdelegate.h"
 #include "appsmanager.h"
+#include "searchedit.h"
 
-class FullScreenFrame : public QWidget
+class FullScreenFrame : public QFrame
 {
     Q_OBJECT
 
@@ -38,14 +39,17 @@ private:
     void hideLauncher();
 
 protected:
-    void keyPressEvent(QKeyEvent *e);
-    void mousePressEvent(QMouseEvent *e);
+    void keyPressEvent(QKeyEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    bool eventFilter(QObject *o, QEvent *e) override;
+    void showEvent(QShowEvent *e) override;
 
 private:
     ListView *m_listView;
     ListModel *m_listModel;
     ItemDelegate *m_itemDelegate;
     AppsManager *m_appsManager;
+    SearchEdit *m_searchEdit;
 };
 
 #endif // FULLSCREENFRAME_H

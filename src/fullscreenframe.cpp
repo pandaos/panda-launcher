@@ -24,24 +24,44 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 
+const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
+{
+    QPoint offset;
+    while (w && w != self) {
+        offset += w->pos();
+        w = qobject_cast<QWidget *>(w->parent());
+    }
+
+    return offset;
+}
+
 FullScreenFrame::FullScreenFrame(QWidget *parent)
-    : QWidget(parent),
+    : QFrame(parent),
       m_listView(new ListView),
       m_listModel(new ListModel),
       m_itemDelegate(new ItemDelegate),
-      m_appsManager(AppsManager::instance())
+      m_appsManager(AppsManager::instance()),
+      m_searchEdit(new SearchEdit)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::SplashScreen);
+    setFocusPolicy(Qt::ClickFocus);
+
+    // setAttribute(Qt::WA_TranslucentBackground);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(50, 10, 50, 10);
+//    layout->setContentsMargins(50, 10, 50, 10);
+    layout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     layout->addWidget(m_listView);
 
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     m_listView->setItemDelegate(m_itemDelegate);
     m_listView->setModel(m_listModel);
 
-    initSize();
+//    setAttribute(Qt::WA_InputMethodEnabled, true);
+//    installEventFilter(this);
+//    m_searchEdit->installEventFilter(this);
+
+//    initSize();
 
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
@@ -72,4 +92,25 @@ void FullScreenFrame::mousePressEvent(QMouseEvent *e)
         return;
 
     hideLauncher();
+}
+
+bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
+{
+    if (o == m_searchEdit && e->type() == QEvent::KeyPress) {
+        QKeyEvent *keyPress = static_cast<QKeyEvent *>(e);
+        if (keyPress->key() == Qt::Key_Left || keyPress->key() == Qt::Key_Right) {
+            QKeyEvent *event = new QKeyEvent(keyPress->type(), keyPress->key(), keyPress->modifiers());
+            qApp->postEvent(this, event);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void FullScreenFrame::showEvent(QShowEvent *e)
+{
+    QWidget::showEvent(e);
+
+    setGeometry(qApp->primaryScreen()->availableGeometry());
 }
