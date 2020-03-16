@@ -21,6 +21,7 @@
 #include "calcutil.h"
 #include <QEvent>
 #include <QApplication>
+#include <QMouseEvent>
 #include <QScreen>
 #include <QDebug>
 
@@ -60,8 +61,10 @@ bool ListView::eventFilter(QObject *object, QEvent *e)
     }
 
     if (object == viewport() && e->type() == QEvent::MouseButtonRelease) {
-        emit requestHideLauncher();
-        return false;
+        if (static_cast<QMouseEvent *>(e)->button() == Qt::LeftButton) {
+            emit requestHideLauncher();
+            return false;
+        }
     }
 
     return false;
