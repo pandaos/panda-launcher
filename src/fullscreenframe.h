@@ -38,12 +38,14 @@ public:
 private:
     void initSize();
     void hideLauncher();
+    void onSearchTextChanged(const QString &text);
 
 protected:
-    void keyPressEvent(QKeyEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
     bool eventFilter(QObject *o, QEvent *e) override;
     void showEvent(QShowEvent *e) override;
+
+    bool handleKeyEvent(QKeyEvent *e);
 
 private:
     ListView *m_listView;

@@ -72,14 +72,18 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_listView->setModel(m_listModel);
 
 //    setAttribute(Qt::WA_InputMethodEnabled, true);
-//    installEventFilter(this);
-//    m_searchEdit->installEventFilter(this);
+    installEventFilter(this);
+    m_listView->installEventFilter(this);
+    m_listView->viewport()->installEventFilter(this);
+    m_searchEdit->installEventFilter(this);
 
     initSize();
 
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
     connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
+
+    connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }
 
 void FullScreenFrame::initSize()
@@ -95,11 +99,12 @@ void FullScreenFrame::hideLauncher()
     QWidget::hide();
 }
 
-void FullScreenFrame::keyPressEvent(QKeyEvent *e)
+void FullScreenFrame::onSearchTextChanged(const QString &text)
 {
-    if (e->key() == Qt::Key_Escape) {
-        hideLauncher();
-    }
+    if (text.isEmpty())
+        ;
+    else
+        ;
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
@@ -123,6 +128,9 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
         m_calcUtil->calc(static_cast<QResizeEvent *>(e)->size() - QSize(PADDING + PADDING, 0));
     }
 
+    if (e->type() == QEvent::KeyPress)
+        return handleKeyEvent(static_cast<QKeyEvent *>(e));
+
     return false;
 }
 
@@ -131,6 +139,39 @@ void FullScreenFrame::showEvent(QShowEvent *e)
     QWidget::showEvent(e);
 
     KWindowSystem::setState(winId(), NET::SkipTaskbar);
+    m_searchEdit->clearFocus();
+    m_searchEdit->clear();
+    m_searchEdit->normalMode();
 
     initSize();
+}
+
+bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
+{
+    if (e->key() == Qt::Key_Escape) {
+        hideLauncher();
+        return true;
+    }
+
+    if ((e->key() <= Qt::Key_Z && e->key() >= Qt::Key_A) ||
+        (e->key() <= Qt::Key_9 && e->key() >= Qt::Key_0) ||
+        (e->key() == Qt::Key_Space)) {
+        const char ch = e->text()[0].toLatin1();
+
+        // -1 means backspace key pressed
+        if (ch == -1) {
+            m_searchEdit->backspace();
+            return true;
+        }
+
+        if (!m_searchEdit->selectedText().isEmpty()) {
+            m_searchEdit->backspace();
+        }
+
+        m_searchEdit->setText(m_searchEdit->text() + ch);
+
+        return true;
+    }
+
+    return false;
 }

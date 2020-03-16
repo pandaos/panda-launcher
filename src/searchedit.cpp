@@ -27,7 +27,7 @@ SearchEdit::SearchEdit(QWidget *parent)
 
     QFontMetrics fm(m_placeholderText->font());
     m_placeholderText->setFixedWidth(fm.width(m_placeholderText->text()) + 10);
-    m_placeholderText->setForegroundRole(QPalette::BrightText);
+//    m_placeholderText->setForegroundRole(QPalette::BrightText);
     m_floatWidget->setFixedWidth(m_searchIcon->width() + m_placeholderText->width() + 5);
 
 //    QHBoxLayout *layout = new QHBoxLayout;
@@ -58,7 +58,7 @@ void SearchEdit::normalMode()
 void SearchEdit::editMode()
 {
     m_placeholderText->hide();
-    m_floatWidget->move(QPoint(0, 0));
+    m_floatWidget->move(-20, 0);
 }
 
 bool SearchEdit::event(QEvent *e)
