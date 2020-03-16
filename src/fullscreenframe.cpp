@@ -101,10 +101,12 @@ void FullScreenFrame::hideLauncher()
 
 void FullScreenFrame::onSearchTextChanged(const QString &text)
 {
+    m_appsManager->searchApp(text);
+
     if (text.isEmpty())
-        ;
+        m_appsManager->switchToNormalMode();
     else
-        ;
+        m_appsManager->switchToSearchMode();
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
@@ -148,6 +150,8 @@ void FullScreenFrame::showEvent(QShowEvent *e)
 
 bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
 {
+    bool ctrlPressed = e->modifiers() & Qt::ControlModifier;
+
     if (e->key() == Qt::Key_Escape) {
         hideLauncher();
         return true;
@@ -156,6 +160,27 @@ bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
     if ((e->key() <= Qt::Key_Z && e->key() >= Qt::Key_A) ||
         (e->key() <= Qt::Key_9 && e->key() >= Qt::Key_0) ||
         (e->key() == Qt::Key_Space)) {
+
+        if (ctrlPressed && e->key() == Qt::Key_A) {
+            m_searchEdit->selectAll();
+            return true;
+        }
+
+        if (ctrlPressed && e->key() == Qt::Key_X) {
+            m_searchEdit->cut();
+            return true;
+        }
+
+        if (ctrlPressed && e->key() == Qt::Key_C) {
+            m_searchEdit->copy();
+            return true;
+        }
+
+        if (ctrlPressed && e->key() == Qt::Key_V) {
+            m_searchEdit->paste();
+            return true;
+        }
+
         const char ch = e->text()[0].toLatin1();
 
         // -1 means backspace key pressed

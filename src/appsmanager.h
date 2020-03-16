@@ -31,16 +31,28 @@ class AppsManager : public QObject
     Q_OBJECT
 
 public:
+    enum Mode {
+        Normal = 0, Search
+    };
+
     static AppsManager* instance();
 
     AppsManager(QObject *parent = nullptr);
     ~AppsManager();
 
     const QList<DesktopInfo> &appList() const { return m_appList; }
+    const QList<DesktopInfo> &searchList() const { return m_searchList; }
     void launchApp(const QModelIndex &index);
+    void searchApp(const QString &keyword);
+
+    void switchToNormalMode();
+    void switchToSearchMode();
+
+    inline Mode mode() { return m_mode; };
 
 signals:
     void dataChanged();
+    void modeChanged();
 
 private:
     void initData();
@@ -48,7 +60,9 @@ private:
 
 private:
     QList<DesktopInfo> m_appList;
+    QList<DesktopInfo> m_searchList;
     QFileSystemWatcher *m_watcher;
+    Mode m_mode;
 };
 
 #endif

@@ -37,7 +37,11 @@ ListModel::~ListModel()
 
 int ListModel::rowCount(const QModelIndex &parent) const
 {
-    return m_appsManager->appList().size();
+    if (m_appsManager->mode() == AppsManager::Normal) {
+        return m_appsManager->appList().size();
+    } else {
+        return m_appsManager->searchList().size();
+    }
 }
 
 QVariant ListModel::data(const QModelIndex &index, int role) const
@@ -47,7 +51,13 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
     }
 
     int r = index.row();
-    DesktopInfo info = m_appsManager->appList().at(r);
+    DesktopInfo info;
+
+    if (m_appsManager->mode() == AppsManager::Normal) {
+        info = m_appsManager->appList().at(r);
+    } else {
+        info = m_appsManager->searchList().at(r);
+    }
 
     switch (role) {
     case AppNameRole:

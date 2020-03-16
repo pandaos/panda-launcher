@@ -27,6 +27,7 @@ class DesktopInfo
 public:
     QString name;
     QString genericName;
+    QString comment;
     QString iconName;
     QString exec;
     QString filePath;

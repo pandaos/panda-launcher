@@ -37,7 +37,8 @@ AppsManager* AppsManager::instance()
 
 AppsManager::AppsManager(QObject *parent)
     : QObject(parent),
-      m_watcher(new QFileSystemWatcher)
+      m_watcher(new QFileSystemWatcher),
+      m_mode(Normal)
 {
     m_watcher->addPath(SYSTEMAPPPATH);
 
@@ -59,7 +60,39 @@ void AppsManager::launchApp(const QModelIndex &index)
 
     connect(thread, &AppRunThread::finished, thread, &AppRunThread::deleteLater);
 
-//    QProcess::startDetached(appExec);
+    //    QProcess::startDetached(appExec);
+}
+
+void AppsManager::searchApp(const QString &keyword)
+{
+    m_searchList.clear();
+
+    if (!keyword.isEmpty()) {
+        for (const DesktopInfo &info : m_appList) {
+            const QString &comment = info.comment;
+            const QString &name = info.name;
+
+            if (name.contains(keyword, Qt::CaseInsensitive)) {
+                m_searchList.append(info);
+            }
+        }
+    }
+
+    emit dataChanged();
+}
+
+void AppsManager::switchToNormalMode()
+{
+    m_mode = Normal;
+
+    emit dataChanged();
+}
+
+void AppsManager::switchToSearchMode()
+{
+    m_mode = Search;
+
+    emit dataChanged();
 }
 
 void AppsManager::initData()
@@ -83,6 +116,7 @@ void AppsManager::initData()
         }
 
         QString appName = desktop.value(QString("Name[%1]").arg(QLocale::system().name())).toString();
+        QString appComment = desktop.value(QString("Comment[%1]").arg(QLocale::system().name())).toString();;
         QString appExec = desktop.value("Exec").toString();
         QString appIcon = desktop.value("Icon").toString();
 
@@ -94,12 +128,16 @@ void AppsManager::initData()
         if (appName.isEmpty()) {
             appName = desktop.value("Name").toString();
         }
+        if (appComment.isEmpty()) {
+            appComment = desktop.value("Comment").toString();
+        }
 
         DesktopInfo appInfo;
         appInfo.name = appName;
         appInfo.iconName = appIcon;
         appInfo.exec = appExec;
         appInfo.filePath = path;
+        appInfo.comment = appComment;
         m_appList << appInfo;
     }
 
