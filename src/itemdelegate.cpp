@@ -93,6 +93,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                            rect.width(),
                            rect.height());
     QString appName = index.data(ListModel::AppNameRole).toString();
+    painter->setPen(Qt::white);
     painter->drawText(textRect, Qt::TextWordWrap | Qt::AlignHCenter, appName);
 }
 

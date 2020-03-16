@@ -21,6 +21,11 @@
 #include <QApplication>
 #include <QImageReader>
 #include <QPixmap>
+#include <QPainter>
+
+QT_BEGIN_NAMESPACE
+extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed = 0);
+QT_END_NAMESPACE
 
 Utils::Utils(QObject *parent)
     : QObject(parent)
@@ -59,4 +64,15 @@ QPixmap Utils::renderSVG(const QString &path, const QSize &size)
     }
 
     return pixmap;
+}
+
+void Utils::blurImage(const QString &path)
+{
+    QPixmap pixmap(path);
+    QPixmap target(pixmap.size());
+    QPainter painter(&target);
+    QImage img = pixmap.toImage();
+    qt_blurImage(&painter, img, 100, true, false);
+    painter.end();
+    target.save(path);
 }

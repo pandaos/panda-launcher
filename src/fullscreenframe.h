@@ -20,7 +20,7 @@
 #ifndef FULLSCREENFRAME_H
 #define FULLSCREENFRAME_H
 
-#include <QFrame>
+#include <QWidget>
 #include "listview.h"
 #include "listmodel.h"
 #include "itemdelegate.h"
@@ -28,7 +28,7 @@
 #include "searchedit.h"
 #include "calcutil.h"
 
-class FullScreenFrame : public QFrame
+class FullScreenFrame : public QWidget
 {
     Q_OBJECT
 
@@ -44,6 +44,7 @@ protected:
     void mousePressEvent(QMouseEvent *e) override;
     bool eventFilter(QObject *o, QEvent *e) override;
     void showEvent(QShowEvent *e) override;
+    void paintEvent(QPaintEvent *e) override;
 
     bool handleKeyEvent(QKeyEvent *e);
 

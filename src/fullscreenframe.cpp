@@ -23,6 +23,7 @@
 #include <QScreen>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QPainter>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
@@ -41,7 +42,7 @@ const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
 }
 
 FullScreenFrame::FullScreenFrame(QWidget *parent)
-    : QFrame(parent),
+    : QWidget(parent),
       m_listView(new ListView),
       m_listModel(new ListModel),
       m_itemDelegate(new ItemDelegate),
@@ -54,11 +55,13 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::ClickFocus);
 
-    QPalette pal = this->palette();
-    QColor windowColor("#EEEEEE");
-    windowColor.setAlpha(140);
-    pal.setColor(QPalette::Window, windowColor);
-    setPalette(pal);
+//    QPalette pal = this->palette();
+////    QColor windowColor("#EEEEEE");
+//    QColor windowColor = Qt::red;
+//    windowColor.setAlphaF(140);
+//    pal.setColor(QPalette::Window, windowColor);
+//    pal.setColor(QPalette::Base, windowColor);
+//    qApp->setPalette(pal);
 
     KWindowEffects::enableBlurBehind(winId(), true);
 
@@ -146,6 +149,15 @@ void FullScreenFrame::showEvent(QShowEvent *e)
     m_searchEdit->normalMode();
 
     initSize();
+}
+
+void FullScreenFrame::paintEvent(QPaintEvent *e)
+{
+    QWidget::paintEvent(e);
+    QPainter painter(this);
+    QColor color("#000000");
+    color.setAlpha(80);
+    painter.fillRect(rect(), color);
 }
 
 bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)

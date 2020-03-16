@@ -32,6 +32,7 @@ public:
 
     static QByteArray detectDesktopEnvironment();
     static QPixmap renderSVG(const QString &path, const QSize &size);
+    static void blurImage(const QString &path);
 };
 
 #endif // MAINWINDOW_H
