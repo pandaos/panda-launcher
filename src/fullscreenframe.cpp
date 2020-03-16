@@ -61,7 +61,6 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setPalette(pal);
 
     KWindowEffects::enableBlurBehind(winId(), true);
-    KWindowSystem::setState(winId(), NET::SkipTaskbar);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(200, 10, 200, 10);
@@ -130,6 +129,8 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
 void FullScreenFrame::showEvent(QShowEvent *e)
 {
     QWidget::showEvent(e);
+
+    KWindowSystem::setState(winId(), NET::SkipTaskbar);
 
     initSize();
 }
