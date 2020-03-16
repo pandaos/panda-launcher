@@ -26,6 +26,7 @@
 #include "itemdelegate.h"
 #include "appsmanager.h"
 #include "searchedit.h"
+#include "calcutil.h"
 
 class FullScreenFrame : public QFrame
 {
@@ -50,6 +51,7 @@ private:
     ItemDelegate *m_itemDelegate;
     AppsManager *m_appsManager;
     SearchEdit *m_searchEdit;
+    CalcUtil *m_calcUtil;
 };
 
 #endif // FULLSCREENFRAME_H

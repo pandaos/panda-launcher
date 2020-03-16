@@ -18,6 +18,7 @@
  */
 
 #include "listview.h"
+#include "calcutil.h"
 #include <QEvent>
 #include <QApplication>
 #include <QScreen>
@@ -30,15 +31,21 @@ ListView::ListView(QWidget *parent)
     setFlow(QListView::LeftToRight);
     setLayoutMode(QListView::Batched);
     setResizeMode(QListView::Adjust);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     setAttribute(Qt::WA_TranslucentBackground);
     setFrameStyle(QFrame::NoFrame);
     setWrapping(true);
-    setSpacing(10);
+    setSpacing(CalcUtil::instance()->itemSpacing());
 
     setStyleSheet("QListView { background-color: transparent;}");
+
+    connect(CalcUtil::instance(), &CalcUtil::layoutChanged, this, [=] {
+        setSpacing(CalcUtil::instance()->itemSpacing());
+
+        QListView::update();
+    });
 }
 
 ListView::~ListView()

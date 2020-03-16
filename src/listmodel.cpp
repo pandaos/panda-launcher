@@ -19,6 +19,7 @@
 
 #include "listmodel.h"
 #include "desktopinfo.h"
+#include "calcutil.h"
 #include <QSize>
 
 ListModel::ListModel(QObject *parent)
@@ -56,7 +57,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
     case AppExecRole:
         return info.exec;
     case ItemSizeHintRole:
-        return QSize(170, 170);
+        return CalcUtil::instance()->itemSize();
     default:
         return QVariant();
     }

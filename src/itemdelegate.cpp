@@ -21,6 +21,20 @@
 #include "listmodel.h"
 #include <QApplication>
 
+const QRect itemBoundingRect(const QRect &itemRect)
+{
+    const int w = itemRect.width();
+    const int h = itemRect.height();
+    const int sub = qAbs((w - h) / 2);
+
+    if (w == h)
+        return itemRect;
+    else if (w > h)
+        return itemRect - QMargins(sub, 0, sub, 0);
+    else
+        return itemRect - QMargins(0, 0, 0, sub * 2);
+}
+
 const QPixmap getThemeIcon(const QString &iconName, const int size)
 {
     const auto ratio = qApp->devicePixelRatio();
@@ -45,8 +59,7 @@ ItemDelegate::ItemDelegate(QObject *parent) :
 
 void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QRect rect = option.rect;
-    rect = rect.marginsRemoved(QMargins(10, 10, 10, 10));
+    QRect rect = itemBoundingRect(option.rect);
 
     painter->setRenderHints(QPainter::Antialiasing |
                             QPainter::TextAntialiasing |

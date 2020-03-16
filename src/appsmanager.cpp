@@ -41,9 +41,7 @@ AppsManager::AppsManager(QObject *parent)
 {
     m_watcher->addPath(SYSTEMAPPPATH);
 
-    connect(m_watcher, &QFileSystemWatcher::directoryChanged, this, [=] {
-
-    });
+    connect(m_watcher, &QFileSystemWatcher::directoryChanged, this, &AppsManager::onDirectoryChanged, Qt::QueuedConnection);
 
     initData();
 }
@@ -79,8 +77,7 @@ void AppsManager::initData()
         DesktopProperties desktop(path, "Desktop Entry");
 
         // NoDisplay 与 OnlyShowIn 条件控制 Launcher 中显示
-        if (desktop.contains("NoDisplay") &&
-            desktop.value("NoDisplay").toBool() ||
+        if (desktop.value("NoDisplay").toBool() ||
             desktop.contains("NotShowIn")) {
             continue;
         }
@@ -107,4 +104,9 @@ void AppsManager::initData()
     }
 
     emit dataChanged();
+}
+
+void AppsManager::onDirectoryChanged()
+{
+
 }

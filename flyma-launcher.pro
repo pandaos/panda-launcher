@@ -31,7 +31,8 @@ HEADERS += src/appsmanager.h \
            src/listview.h \
            src/utils.h \
     src/searchedit.h \
-    src/apprunthread.h
+    src/apprunthread.h \
+    src/calcutil.h
 
 SOURCES += src/appsmanager.cpp \
            src/desktopproperties.cpp \
@@ -42,7 +43,8 @@ SOURCES += src/appsmanager.cpp \
            src/main.cpp \
            src/utils.cpp \
     src/searchedit.cpp \
-    src/apprunthread.cpp
+    src/apprunthread.cpp \
+    src/calcutil.cpp
 
 RESOURCES += \
     src/resources.qrc

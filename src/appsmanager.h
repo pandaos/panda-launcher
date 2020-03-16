@@ -44,6 +44,7 @@ signals:
 
 private:
     void initData();
+    void onDirectoryChanged();
 
 private:
     QList<DesktopInfo> m_appList;

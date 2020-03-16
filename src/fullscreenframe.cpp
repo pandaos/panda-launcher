@@ -23,8 +23,11 @@
 #include <QScreen>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QScrollArea>
 
 #include <KF5/KWindowSystem/KWindowEffects>
+
+#define PADDING 200
 
 const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
 {
@@ -43,14 +46,16 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
       m_listModel(new ListModel),
       m_itemDelegate(new ItemDelegate),
       m_appsManager(AppsManager::instance()),
-      m_searchEdit(new SearchEdit)
+      m_searchEdit(new SearchEdit),
+      m_calcUtil(CalcUtil::instance())
 {
+    setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::ClickFocus);
 
     QPalette pal = this->palette();
-    QColor windowColor("#EEEEEE");
+    QColor windowColor("#EFEFEF");
     windowColor.setAlpha(140);
     pal.setColor(QPalette::Window, windowColor);
     setPalette(pal);
@@ -112,6 +117,8 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
             qApp->postEvent(this, event);
             return true;
         }
+    } else if (o == m_listView->viewport() && e->type() == QEvent::Resize) {
+        m_calcUtil->calc(static_cast<QResizeEvent *>(e)->size() - QSize(PADDING + PADDING, 0));
     }
 
     return false;
@@ -122,4 +129,5 @@ void FullScreenFrame::showEvent(QShowEvent *e)
     QWidget::showEvent(e);
 
     initSize();
+    m_calcUtil->calc(rect().size()- QSize(PADDING + PADDING, 0));
 }
