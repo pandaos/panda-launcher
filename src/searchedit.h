@@ -15,6 +15,7 @@ public:
     void editMode();
 
 protected:
+    bool event(QEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
 
 private:

@@ -56,7 +56,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
     case AppExecRole:
         return info.exec;
     case ItemSizeHintRole:
-        return QSize(200, 200);
+        return QSize(170, 170);
     default:
         return QVariant();
     }

@@ -2,6 +2,7 @@
 #include "utils.h"
 #include <QHBoxLayout>
 #include <QTimer>
+#include <QEvent>
 
 SearchEdit::SearchEdit(QWidget *parent)
     : QLineEdit(parent),
@@ -52,13 +53,21 @@ void SearchEdit::normalMode()
 
     m_placeholderText->show();
     m_floatWidget->move(rect().center() - m_floatWidget->rect().center());
-    m_floatWidget->raise();
 }
 
 void SearchEdit::editMode()
 {
     m_placeholderText->hide();
-    m_floatWidget->move(QPoint(5, 0));
+    m_floatWidget->move(QPoint(0, 0));
+}
+
+bool SearchEdit::event(QEvent *e)
+{
+    switch (e->type()) {
+        case QEvent::FocusIn: editMode(); break;
+    }
+
+    return QLineEdit::event(e);
 }
 
 void SearchEdit::resizeEvent(QResizeEvent *e)

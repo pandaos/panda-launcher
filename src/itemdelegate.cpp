@@ -57,16 +57,11 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
         painter->setBrush(QColor(0, 0, 0, 105));
         painter->drawRoundedRect(rect, 10, 10);
     }
-    // QRect roundedRect = rect.marginsRemoved(QMargins(10, 10, 10, 10));
-
-    // painter->setBrush(QBrush(QColor(238, 23, 238)));
-    // painter->drawRect(option.rect);
-    // painter->drawText(option.rect, index.data(ListModel::AppNameRole).toString());
 
     int iconSize = 72;
     QPixmap iconPixmap = getThemeIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
     int iconLeftMargin = (rect.width() - iconPixmap.width()) / 2;
-    int iconTopMargin = rect.height() * 0.1;
+    int iconTopMargin = rect.height() * 0.12;
     painter->drawPixmap(rect.x() + iconLeftMargin,
                         rect.y() + iconTopMargin,
                         iconPixmap.width(),
@@ -79,7 +74,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     painter->setBrush(Qt::transparent);
     painter->setPen(Qt::black);
 
-    int textTopMargin = rect.width() * 0.53;
+    int textTopMargin = rect.width() * 0.63;
     QRect textRect = QRect(rect.x(),
                            rect.y() + textTopMargin,
                            rect.width(),

@@ -26,16 +26,17 @@ ListView::ListView(QWidget *parent)
     : QListView(parent)
 {
     viewport()->installEventFilter(this);
-    setAttribute(Qt::WA_TranslucentBackground);
 
     setFlow(QListView::LeftToRight);
     setLayoutMode(QListView::Batched);
     setResizeMode(QListView::Adjust);
-//    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    setAttribute(Qt::WA_TranslucentBackground);
     setFrameStyle(QFrame::NoFrame);
     setWrapping(true);
+    setSpacing(10);
 
     setStyleSheet("QListView { background-color: transparent;}");
 }
@@ -47,7 +48,7 @@ ListView::~ListView()
 bool ListView::eventFilter(QObject *object, QEvent *e)
 {
     if (object == viewport() && e->type() == QEvent::Paint) {
-        fitToContent();
+//         fitToContent();
     }
 
     return false;

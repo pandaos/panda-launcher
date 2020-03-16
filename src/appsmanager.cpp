@@ -65,14 +65,16 @@ void AppsManager::initData()
         it.next();
 
         QString path = it.filePath();
-        QSettings settings(path, QSettings::IniFormat);
-        settings.setIniCodec("utf-8");
-        settings.beginGroup("Desktop Entry");
+
+        if (QFileInfo(path).suffix() != "desktop")
+            continue;
+
         DesktopProperties desktop(path, "Desktop Entry");
 
         // NoDisplay 与 OnlyShowIn 条件控制 Launcher 中显示
         if (desktop.contains("NoDisplay") &&
-            desktop.value("NoDisplay").toBool()) {
+            desktop.value("NoDisplay").toBool() ||
+            desktop.contains("NotShowIn")) {
             continue;
         }
 
@@ -84,6 +86,7 @@ void AppsManager::initData()
         appExec.remove(QRegExp("^\""));
         appExec.remove(QRegExp(" *$"));
 
+        // 如果获取不到与系统语言的名称
         if (appName.isEmpty()) {
             appName = desktop.value("Name").toString();
         }
@@ -94,8 +97,6 @@ void AppsManager::initData()
         appInfo.exec = appExec;
         appInfo.filePath = path;
         m_appList << appInfo;
-
-        qDebug() << appInfo.exec;
     }
 
     emit dataChanged();

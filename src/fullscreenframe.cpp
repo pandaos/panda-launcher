@@ -24,6 +24,8 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 
+#include <KF5/KWindowSystem/KWindowEffects>
+
 const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
 {
     QPoint offset;
@@ -43,13 +45,20 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
       m_appsManager(AppsManager::instance()),
       m_searchEdit(new SearchEdit)
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::SplashScreen);
+    setWindowFlags(Qt::FramelessWindowHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::ClickFocus);
 
-    // setAttribute(Qt::WA_TranslucentBackground);
+    QPalette pal = this->palette();
+    QColor windowColor("#EEEEEE");
+    windowColor.setAlpha(140);
+    pal.setColor(QPalette::Window, windowColor);
+    setPalette(pal);
+
+    KWindowEffects::enableBlurBehind(winId(), true);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-//    layout->setContentsMargins(50, 10, 50, 10);
+    layout->setContentsMargins(200, 10, 200, 10);
     layout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     layout->addWidget(m_listView);
 
@@ -61,7 +70,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
 //    installEventFilter(this);
 //    m_searchEdit->installEventFilter(this);
 
-//    initSize();
+    initSize();
 
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
@@ -112,5 +121,5 @@ void FullScreenFrame::showEvent(QShowEvent *e)
 {
     QWidget::showEvent(e);
 
-    setGeometry(qApp->primaryScreen()->availableGeometry());
+    initSize();
 }
