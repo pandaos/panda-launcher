@@ -23,7 +23,6 @@
 #include <QScreen>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include <QScrollArea>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 
@@ -55,7 +54,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setFocusPolicy(Qt::ClickFocus);
 
     QPalette pal = this->palette();
-    QColor windowColor("#EFEFEF");
+    QColor windowColor("#EEEEEE");
     windowColor.setAlpha(140);
     pal.setColor(QPalette::Window, windowColor);
     setPalette(pal);

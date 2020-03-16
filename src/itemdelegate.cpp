@@ -67,7 +67,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     painter->setPen(Qt::transparent);
 
     if(option.state & QStyle::State_MouseOver) {
-        painter->setBrush(QColor(0, 0, 0, 105));
+        painter->setBrush(QColor(0, 0, 0, 75));
         painter->drawRoundedRect(rect, 10, 10);
     }
 
