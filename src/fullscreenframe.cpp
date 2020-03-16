@@ -85,6 +85,8 @@ void FullScreenFrame::initSize()
 {
     QRect geometry = qApp->primaryScreen()->availableGeometry();
     setGeometry(geometry);
+
+    m_calcUtil->calc(rect().size()- QSize(PADDING + PADDING, 0));
 }
 
 void FullScreenFrame::hideLauncher()
@@ -128,5 +130,4 @@ void FullScreenFrame::showEvent(QShowEvent *e)
     QWidget::showEvent(e);
 
     initSize();
-    m_calcUtil->calc(rect().size()- QSize(PADDING + PADDING, 0));
 }
