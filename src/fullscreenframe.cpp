@@ -25,6 +25,7 @@
 #include <QMouseEvent>
 
 #include <KF5/KWindowSystem/KWindowEffects>
+#include <KF5/KWindowSystem/KWindowSystem>
 
 #define PADDING 200
 
@@ -60,6 +61,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setPalette(pal);
 
     KWindowEffects::enableBlurBehind(winId(), true);
+    KWindowSystem::setState(winId(), NET::SkipTaskbar);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(200, 10, 200, 10);
