@@ -22,6 +22,7 @@
 #include "listmodel.h"
 #include "utils.h"
 #include <QDirIterator>
+#include <QStandardPaths>
 #include <QSettings>
 #include <QProcess>
 #include <QDebug>
@@ -60,6 +61,8 @@ void AppsManager::launchApp(const QModelIndex &index)
 
     connect(thread, &AppRunThread::finished, thread, &AppRunThread::deleteLater);
 
+    emit requestHideLauncher();
+
     //    QProcess::startDetached(appExec);
 }
 
@@ -94,6 +97,41 @@ void AppsManager::switchToSearchMode()
     m_mode = Search;
 
     emit dataChanged();
+}
+
+void AppsManager::showRightMenu(const QPoint &p, const QModelIndex &idx)
+{
+    QMenu *menu = new QMenu;
+    QAction *openAction = new QAction(tr("Open"), this);
+    QAction *uninstallAction = new QAction(tr("Uninstall"), this);
+    QAction *dockAction = new QAction(tr("Send to dock"), this);
+
+    connect(openAction, &QAction::triggered, this, [=] { launchApp(idx); });
+
+    connect(dockAction, &QAction::triggered, this, [=] { sendToDock(idx); });
+
+    // todo: auto start, uninstall
+
+    menu->addAction(openAction);
+    menu->addAction(uninstallAction);
+    menu->addSeparator();
+    menu->addAction(dockAction);
+
+    menu->move(p);
+    menu->exec();
+}
+
+void AppsManager::sendToDock(const QModelIndex &idx)
+{
+    QSettings settings(QString("%1/%2/dock_list.conf")
+                       .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
+                       .arg("flyma-taskbar"),
+                       QSettings::IniFormat);
+
+    QStringList list = settings.value("appname").value<QStringList>();
+    list.append(idx.data(ListModel::AppExecRole).toString());
+
+    settings.setValue("appname", QVariant::fromValue(list));
 }
 
 void AppsManager::initData()

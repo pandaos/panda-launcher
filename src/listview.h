@@ -32,9 +32,11 @@ public:
 
 signals:
     void requestHideLauncher();
+    void requestPopupMenu(const QPoint &p, const QModelIndex &idx);
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *e) override;
+    void mousePressEvent(QMouseEvent *e) override;
+    void mouseReleaseEvent(QMouseEvent *e) override;
 
 private:
     void fitToContent();

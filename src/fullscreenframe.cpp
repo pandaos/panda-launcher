@@ -78,6 +78,8 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
     connect(m_listView, &ListView::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
+    connect(m_listView, &ListView::requestPopupMenu, this, &FullScreenFrame::onPopupMenu);
+    connect(m_appsManager, &AppsManager::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
     connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }
 
@@ -102,6 +104,11 @@ void FullScreenFrame::onSearchTextChanged(const QString &text)
         m_appsManager->switchToNormalMode();
     else
         m_appsManager->switchToSearchMode();
+}
+
+void FullScreenFrame::onPopupMenu(const QPoint &p, const QModelIndex &idx)
+{
+    m_appsManager->showRightMenu(p, idx);
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)

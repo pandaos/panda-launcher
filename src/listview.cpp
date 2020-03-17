@@ -28,8 +28,6 @@
 ListView::ListView(QWidget *parent)
     : QListView(parent)
 {
-    viewport()->installEventFilter(this);
-
     setFlow(QListView::LeftToRight);
     setLayoutMode(QListView::Batched);
     setResizeMode(QListView::Adjust);
@@ -54,20 +52,26 @@ ListView::~ListView()
 {
 }
 
-bool ListView::eventFilter(QObject *object, QEvent *e)
+void ListView::mousePressEvent(QMouseEvent *e)
 {
-    if (object == viewport() && e->type() == QEvent::Paint) {
-//         fitToContent();
+    if (e->button() == Qt::RightButton) {
+        QPoint p = mapToGlobal(e->pos());
+        const QModelIndex &idx = QListView::indexAt(e->pos());
+
+        if (idx.isValid())
+            emit requestPopupMenu(p, idx);
     }
 
-    if (object == viewport() && e->type() == QEvent::MouseButtonRelease) {
-        if (static_cast<QMouseEvent *>(e)->button() == Qt::LeftButton) {
-            emit requestHideLauncher();
-            return true;
-        }
+    QListView::mousePressEvent(e);
+}
+
+void ListView::mouseReleaseEvent(QMouseEvent *e)
+{
+    if (e->button() == Qt::LeftButton) {
+        emit requestHideLauncher();
     }
 
-    return false;
+    QListView::mouseReleaseEvent(e);
 }
 
 void ListView::fitToContent()

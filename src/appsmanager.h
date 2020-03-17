@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QFileSystemWatcher>
+#include <QMenu>
 #include "desktopinfo.h"
 
 #define SYSTEMAPPPATH "/usr/share/applications"
@@ -50,9 +51,14 @@ public:
 
     inline Mode mode() { return m_mode; };
 
+    void showRightMenu(const QPoint &p, const QModelIndex &idx);
+
+    void sendToDock(const QModelIndex &idx);
+
 signals:
     void dataChanged();
     void modeChanged();
+    void requestHideLauncher();
 
 private:
     void initData();

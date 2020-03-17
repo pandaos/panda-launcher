@@ -39,6 +39,7 @@ private:
     void initSize();
     void hideLauncher();
     void onSearchTextChanged(const QString &text);
+    void onPopupMenu(const QPoint &p, const QModelIndex &idx);
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
