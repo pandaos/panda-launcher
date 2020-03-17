@@ -64,7 +64,14 @@ void SearchEdit::editMode()
 bool SearchEdit::event(QEvent *e)
 {
     switch (e->type()) {
-        case QEvent::FocusIn: editMode(); break;
+    case QEvent::FocusIn:
+        editMode();
+        break;
+    case QEvent::FocusOut:
+        normalMode();
+        break;
+    default:
+        break;
     }
 
     return QLineEdit::event(e);
