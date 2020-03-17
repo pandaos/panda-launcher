@@ -63,7 +63,7 @@ bool ListView::eventFilter(QObject *object, QEvent *e)
     if (object == viewport() && e->type() == QEvent::MouseButtonRelease) {
         if (static_cast<QMouseEvent *>(e)->button() == Qt::LeftButton) {
             emit requestHideLauncher();
-            return false;
+            return true;
         }
     }
 

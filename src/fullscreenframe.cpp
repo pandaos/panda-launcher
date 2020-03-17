@@ -58,7 +58,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     KWindowEffects::enableBlurBehind(winId(), true);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(200, 10, 200, 10);
+    layout->setContentsMargins(200, 20, 200, 20);
     layout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     layout->addWidget(m_listView);
 
