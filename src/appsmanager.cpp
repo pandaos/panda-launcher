@@ -129,9 +129,12 @@ void AppsManager::sendToDock(const QModelIndex &idx)
                        QSettings::IniFormat);
 
     QStringList list = settings.value("appname").value<QStringList>();
-    list.append(idx.data(ListModel::AppExecRole).toString());
+    QString appExec = idx.data(ListModel::AppExecRole).toString();
 
-    settings.setValue("appname", QVariant::fromValue(list));
+    if (!list.contains(appExec)) {
+        list.append(appExec);
+        settings.setValue("appname", QVariant::fromValue(list));
+    }
 }
 
 void AppsManager::initData()

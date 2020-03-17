@@ -46,6 +46,7 @@ protected:
     bool eventFilter(QObject *o, QEvent *e) override;
     void showEvent(QShowEvent *e) override;
     void paintEvent(QPaintEvent *e) override;
+    bool event(QEvent *e) override;
 
     bool handleKeyEvent(QKeyEvent *e);
 

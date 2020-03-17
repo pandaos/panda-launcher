@@ -58,7 +58,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     KWindowEffects::enableBlurBehind(winId(), true);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(200, 20, 200, 20);
+    layout->setContentsMargins(200, 20, 200, 10);
     layout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     layout->addWidget(m_listView);
 
@@ -157,6 +157,16 @@ void FullScreenFrame::paintEvent(QPaintEvent *e)
     QColor color("#000000");
     color.setAlpha(80);
     painter.fillRect(rect(), color);
+}
+
+bool FullScreenFrame::event(QEvent *e)
+{
+    if (e->type() == QEvent::ActivationChange) {
+        if (qApp->activeWindow() != this)
+            hideLauncher();
+    }
+
+    return QWidget::event(e);
 }
 
 bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
