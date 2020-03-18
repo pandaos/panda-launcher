@@ -67,9 +67,6 @@ bool SearchEdit::event(QEvent *e)
     case QEvent::FocusIn:
         editMode();
         break;
-    case QEvent::FocusOut:
-        normalMode();
-        break;
     default:
         break;
     }
