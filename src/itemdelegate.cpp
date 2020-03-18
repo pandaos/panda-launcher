@@ -71,7 +71,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
         painter->drawRoundedRect(rect, 10, 10);
     }
 
-    int iconSize = 72;
+    int iconSize = rect.width() * 0.4;
     QPixmap iconPixmap = getThemeIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
     int iconLeftMargin = (rect.width() - iconPixmap.width()) / 2;
     int iconTopMargin = rect.height() * 0.12;
