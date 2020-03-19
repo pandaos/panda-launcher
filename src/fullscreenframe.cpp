@@ -60,8 +60,9 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     KWindowEffects::enableBlurBehind(winId(), true);
     // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
-    m_mainLayout->setContentsMargins(200, 20, 200, 130);
+    m_mainLayout->setContentsMargins(200, 70, 200, 70);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
+    m_mainLayout->addSpacing(20);
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
 

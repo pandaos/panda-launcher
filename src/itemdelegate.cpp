@@ -67,7 +67,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     painter->setPen(Qt::transparent);
 
     if(option.state & QStyle::State_MouseOver) {
-        painter->setBrush(QColor(255, 255, 255, 50));
+        painter->setBrush(QColor(0, 0, 0, 50));
         painter->drawRoundedRect(rect, 10, 10);
     }
 
@@ -93,8 +93,11 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                            rect.width(),
                            rect.height());
     QString appName = index.data(ListModel::AppNameRole).toString();
+    painter->setPen(QColor(0, 0, 0, 130));
+    painter->drawText(textRect.adjusted(0, 2, 2, 0), appName, appNameOption);
+    painter->drawText(textRect.adjusted(0, 1, 1, 0), appName, appNameOption);
     painter->setPen(Qt::white);
-    painter->drawText(textRect, Qt::TextWordWrap | Qt::AlignHCenter, appName);
+    painter->drawText(textRect, appName, appNameOption);
 }
 
 QSize ItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
