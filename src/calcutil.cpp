@@ -25,7 +25,7 @@ int CalcUtil::calculateBesidePadding(const int screenWidth)
 
 void CalcUtil::calc(const QSize &containerSize)
 {
-    const QRect pr = qApp->primaryScreen()->availableGeometry();
+    const QRect pr = qApp->primaryScreen()->geometry();
     const int screenWidth = pr.width();
     int remainWidth = screenWidth - calculateBesidePadding(screenWidth) * 2;
 

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     app.setQuitOnLastWindowClosed(false);
 
     if (app.isRunning()) {
-        app.sendMessage("raise_window_noop");
+        app.sendMessage("show");
         return 0;
     }
 

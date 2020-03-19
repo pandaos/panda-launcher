@@ -18,12 +18,13 @@
  */
 
 #include "fullscreenframe.h"
-#include <QVBoxLayout>
 #include <QApplication>
 #include <QScreen>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QDebug>
+#include <QTimer>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
@@ -43,6 +44,7 @@ const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
 
 FullScreenFrame::FullScreenFrame(QWidget *parent)
     : QWidget(parent),
+      m_mainLayout(new QVBoxLayout),
       m_listView(new ListView),
       m_listModel(new ListModel),
       m_itemDelegate(new ItemDelegate),
@@ -56,17 +58,17 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setFocusPolicy(Qt::ClickFocus);
 
     KWindowEffects::enableBlurBehind(winId(), true);
+    // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(200, 20, 200, 10);
-    layout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
-    layout->addWidget(m_listView);
+    m_mainLayout->setContentsMargins(200, 20, 200, 10);
+    m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
+    m_mainLayout->addWidget(m_listView);
+    setLayout(m_mainLayout);
 
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     m_listView->setItemDelegate(m_itemDelegate);
     m_listView->setModel(m_listModel);
 
-//    setAttribute(Qt::WA_InputMethodEnabled, true);
     installEventFilter(this);
     m_listView->installEventFilter(this);
     m_listView->viewport()->installEventFilter(this);
@@ -85,15 +87,16 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
 
 void FullScreenFrame::initSize()
 {
-    QRect geometry = qApp->primaryScreen()->availableGeometry();
-    setGeometry(geometry);
+    QRect geometry = qApp->primaryScreen()->geometry();
+    QWidget::setGeometry(geometry);
+    QWidget::setFixedSize(geometry.size());
 
-    m_calcUtil->calc(rect().size()- QSize(PADDING + PADDING, 0));
+    m_calcUtil->calc(geometry.size()- QSize(PADDING + PADDING, 0));
 }
 
 void FullScreenFrame::hideLauncher()
 {
-    QWidget::hide();
+    QWidget::setVisible(false);
 }
 
 void FullScreenFrame::onSearchTextChanged(const QString &text)
@@ -140,19 +143,21 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
 
 void FullScreenFrame::showEvent(QShowEvent *e)
 {
+    qDebug() << "showEvent" << qApp->primaryScreen()->geometry();
     QWidget::showEvent(e);
 
-    KWindowSystem::setState(winId(), NET::SkipTaskbar);
+//    KWindowSystem::setState(winId(), NET::SkipTaskbar);
     m_searchEdit->clearFocus();
     m_searchEdit->clear();
     m_searchEdit->normalMode();
 
     initSize();
+
 }
 
 void FullScreenFrame::paintEvent(QPaintEvent *e)
 {
-    QWidget::paintEvent(e);
+    return QWidget::paintEvent(e);
     QPainter painter(this);
     QColor color("#000000");
     color.setAlpha(80);

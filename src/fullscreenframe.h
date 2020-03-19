@@ -21,6 +21,8 @@
 #define FULLSCREENFRAME_H
 
 #include <QWidget>
+#include <QVBoxLayout>
+
 #include "listview.h"
 #include "listmodel.h"
 #include "itemdelegate.h"
@@ -51,6 +53,7 @@ protected:
     bool handleKeyEvent(QKeyEvent *e);
 
 private:
+    QVBoxLayout *m_mainLayout;
     ListView *m_listView;
     ListModel *m_listModel;
     ItemDelegate *m_itemDelegate;

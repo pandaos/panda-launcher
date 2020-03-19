@@ -330,8 +330,10 @@ void QtSingleApplication::activateWindow()
             actWin->raise();
             actWin->showNormal();
             actWin->activateWindow();
-            actWin->setGeometry(QRect(0,this->desktop()->availableGeometry().height()-actWin->height(),
-                                      actWin->width(),actWin->height()));
+//            actWin->setGeometry(QRect(0,this->desktop()->availableGeometry().height()-actWin->height(),
+//                                      actWin->width(),actWin->height()));
+
+
         }
         else {
             actWin->setWindowState(actWin->windowState() & Qt::WindowMinimized);
