@@ -93,7 +93,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                            rect.width(),
                            rect.height());
     QString appName = index.data(ListModel::AppNameRole).toString();
-    painter->setPen(QColor(0, 0, 0, 130));
+    painter->setPen(QColor(0, 0, 0, 100));
     painter->drawText(textRect.adjusted(0, 2, 2, 0), appName, appNameOption);
     painter->drawText(textRect.adjusted(0, 1, 1, 0), appName, appNameOption);
     painter->setPen(Qt::white);
