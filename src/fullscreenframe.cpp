@@ -60,7 +60,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     KWindowEffects::enableBlurBehind(winId(), true);
     // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
-    m_mainLayout->setContentsMargins(200, 20, 200, 10);
+    m_mainLayout->setContentsMargins(200, 20, 200, 130);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
@@ -143,10 +143,10 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
 
 void FullScreenFrame::showEvent(QShowEvent *e)
 {
-    qDebug() << "showEvent" << qApp->primaryScreen()->geometry();
     QWidget::showEvent(e);
 
-//    KWindowSystem::setState(winId(), NET::SkipTaskbar);
+    KWindowSystem::setState(winId(), NET::SkipTaskbar);
+    KWindowSystem::setState(winId(), NET::SkipSwitcher);
     m_searchEdit->clearFocus();
     m_searchEdit->clear();
     m_searchEdit->normalMode();

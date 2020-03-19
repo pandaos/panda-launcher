@@ -125,11 +125,11 @@ void AppsManager::sendToDock(const QModelIndex &idx)
 {
     QSettings settings(QString("%1/%2/dock_list.conf")
                        .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
-                       .arg("flyma-taskbar"),
+                       .arg("flyma-dock"),
                        QSettings::IniFormat);
 
     QStringList list = settings.value("appname").value<QStringList>();
-    QString appExec = idx.data(ListModel::AppExecRole).toString();
+    QString appExec = idx.data(ListModel::AppIconRole).toString();
 
     if (!list.contains(appExec)) {
         list.append(appExec);
