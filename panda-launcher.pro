@@ -5,7 +5,7 @@
 QT += core gui widgets KWindowSystem
 
 TEMPLATE = app
-TARGET = flyma-launcher
+TARGET = panda-launcher
 INCLUDEPATH += .
 
 include(QtSingleApplication/qtsingleapplication.pri)

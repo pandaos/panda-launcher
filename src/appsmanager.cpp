@@ -125,7 +125,7 @@ void AppsManager::sendToDock(const QModelIndex &idx)
 {
     QSettings settings(QString("%1/%2/dock_list.conf")
                        .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))
-                       .arg("flyma-dock"),
+                       .arg("panda-dock"),
                        QSettings::IniFormat);
 
     QStringList list = settings.value("appname").value<QStringList>();

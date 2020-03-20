@@ -23,7 +23,7 @@
 
 int main(int argc, char *argv[])
 {
-    QtSingleApplication app("flyma-launcher", argc, argv);
+    QtSingleApplication app("panda-launcher", argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
     if (app.isRunning()) {

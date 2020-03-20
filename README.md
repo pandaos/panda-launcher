@@ -1,7 +1,7 @@
-# FlymaOS Launcher
+# PandaOS Launcher
 
-Flyma Launcher is the launcher of FlymaOS.
+Panda Launcher is the launcher of PandaOS.
 
 ## License
 
-flyma-launcher is licensed under GPLv3.
+panda-launcher is licensed under GPLv3.
