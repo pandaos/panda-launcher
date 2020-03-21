@@ -22,6 +22,8 @@
 
 #include <QWidget>
 #include <QVBoxLayout>
+#include <QFileSystemWatcher>
+#include <QSettings>
 
 #include "listview.h"
 #include "listmodel.h"
@@ -43,6 +45,8 @@ private:
     void onSearchTextChanged(const QString &text);
     void onPopupMenu(const QPoint &p, const QModelIndex &idx);
 
+    void initContentMargins();
+
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     bool eventFilter(QObject *o, QEvent *e) override;
@@ -60,6 +64,9 @@ private:
     AppsManager *m_appsManager;
     SearchEdit *m_searchEdit;
     CalcUtil *m_calcUtil;
+
+    QString m_dockConfigPath;
+    QFileSystemWatcher *m_dockSettingsWatcher;
 };
 
 #endif // FULLSCREENFRAME_H

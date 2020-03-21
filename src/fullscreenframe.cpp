@@ -22,6 +22,7 @@
 #include <QScreen>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QStandardPaths>
 #include <QPainter>
 #include <QDebug>
 #include <QTimer>
@@ -50,8 +51,17 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
       m_itemDelegate(new ItemDelegate),
       m_appsManager(AppsManager::instance()),
       m_searchEdit(new SearchEdit),
-      m_calcUtil(CalcUtil::instance())
+      m_calcUtil(CalcUtil::instance()),
+      m_dockSettingsWatcher(new QFileSystemWatcher(this))
 {
+    // init dock settings.
+    m_dockConfigPath = QString("%1/panda-dock/config.conf")
+            .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+    m_dockSettingsWatcher->addPath(m_dockConfigPath);
+    connect(m_dockSettingsWatcher, &QFileSystemWatcher::fileChanged, this, [=] {
+        QTimer::singleShot(100, this, &FullScreenFrame::initContentMargins);
+    });
+
     setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -60,11 +70,12 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     KWindowEffects::enableBlurBehind(winId(), true);
     // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
-    m_mainLayout->setContentsMargins(200, 70, 200, 70);
+    m_mainLayout->setContentsMargins(200, 70, 200, 120);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     m_mainLayout->addSpacing(20);
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
+    initContentMargins();
 
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     m_listView->setItemDelegate(m_itemDelegate);
@@ -113,6 +124,31 @@ void FullScreenFrame::onSearchTextChanged(const QString &text)
 void FullScreenFrame::onPopupMenu(const QPoint &p, const QModelIndex &idx)
 {
     m_appsManager->showRightMenu(p, idx);
+}
+
+void FullScreenFrame::initContentMargins()
+{
+    QSettings settings(m_dockConfigPath, QSettings::IniFormat);
+    const int iconSize = settings.value("icon_size").toInt();
+    // dock position: bottom 0, left 1
+    const int position = settings.value("position").toInt();
+    const int padding = 10;
+    QMargins margins;
+
+    if (position == 0) {
+        margins.setLeft(200);
+        margins.setRight(200);
+        margins.setBottom(iconSize + padding * 4);
+        margins.setTop(50);
+    } else {
+        margins.setLeft(200);
+        margins.setRight(200);
+        margins.setBottom(70);
+        margins.setTop(50);
+    }
+
+    m_mainLayout->setContentsMargins(margins);
+    m_dockSettingsWatcher->addPath(m_dockConfigPath);
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
