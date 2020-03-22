@@ -36,6 +36,7 @@ ListView::ListView(QWidget *parent)
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     setAttribute(Qt::WA_TranslucentBackground);
     setFrameStyle(QFrame::NoFrame);
+    setMouseTracking(true);
     setWrapping(true);
     setSpacing(CalcUtil::instance()->itemSpacing());
 
@@ -50,6 +51,22 @@ ListView::ListView(QWidget *parent)
 
 ListView::~ListView()
 {
+}
+
+void ListView::enterEvent(QEvent *e)
+{
+    QListView::enterEvent(e);
+
+    emit entered(indexAt(mapFromGlobal(QCursor::pos())));
+}
+
+void ListView::mouseMoveEvent(QMouseEvent *e)
+{
+    const QModelIndex &idx = indexAt(e->pos());
+
+    if (idx.isValid()) {
+        emit entered(idx);
+    }
 }
 
 void ListView::mousePressEvent(QMouseEvent *e)

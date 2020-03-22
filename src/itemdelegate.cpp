@@ -53,8 +53,21 @@ const QPixmap getThemeIcon(const QString &iconName, const int size)
 
 ItemDelegate::ItemDelegate(QObject *parent) :
     QAbstractItemDelegate(parent)
+    ,m_currentIndex(QModelIndex())
 {
 
+}
+
+void ItemDelegate::setCurrentIndex(const QModelIndex &idx)
+{
+    if (m_currentIndex == idx)
+        return;
+
+    QModelIndex previousIdx = m_currentIndex;
+    m_currentIndex = idx;
+
+    emit requestUpdate(previousIdx);
+    emit requestUpdate(m_currentIndex);
 }
 
 void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -66,7 +79,8 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                             QPainter::SmoothPixmapTransform);
     painter->setPen(Qt::transparent);
 
-    if(option.state & QStyle::State_MouseOver) {
+    const bool isCurrent = index == m_currentIndex;
+    if (isCurrent) {
         painter->setBrush(QColor(0, 0, 0, 50));
         painter->drawRoundedRect(rect, 10, 10);
     }

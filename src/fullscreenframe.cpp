@@ -77,6 +77,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setLayout(m_mainLayout);
     initContentMargins();
 
+    m_itemDelegate->setCurrentIndex(QModelIndex());
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     m_listView->setItemDelegate(m_itemDelegate);
     m_listView->setModel(m_listModel);
@@ -89,10 +90,14 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     initSize();
 
     connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
+    connect(m_listView, &QListView::entered, m_itemDelegate, &ItemDelegate::setCurrentIndex);
     connect(m_listView, &QListView::clicked, m_appsManager, &AppsManager::launchApp);
     connect(m_listView, &QListView::clicked, this, &FullScreenFrame::hideLauncher);
     connect(m_listView, &ListView::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
     connect(m_listView, &ListView::requestPopupMenu, this, &FullScreenFrame::onPopupMenu);
+
+    connect(m_itemDelegate, &ItemDelegate::requestUpdate, m_listView, static_cast<void (ListView::*)(const QModelIndex&)>(&ListView::update));
+
     connect(m_appsManager, &AppsManager::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
     connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }

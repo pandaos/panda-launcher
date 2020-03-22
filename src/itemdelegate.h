@@ -32,9 +32,17 @@ class ItemDelegate : public QAbstractItemDelegate
 public:
     explicit ItemDelegate(QObject *parent = 0);
 
+    void setCurrentIndex(const QModelIndex &idx);
+
+signals:
+    void requestUpdate(const QModelIndex &idx);
+
 protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+private:
+    QModelIndex m_currentIndex;
 };
 
 #endif // ITEMDELEGATE_H
