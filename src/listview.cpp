@@ -24,6 +24,7 @@
 #include <QMouseEvent>
 #include <QScreen>
 #include <QDebug>
+#include <QScroller>
 
 ListView::ListView(QWidget *parent)
     : QListView(parent)
@@ -39,6 +40,9 @@ ListView::ListView(QWidget *parent)
     setMouseTracking(true);
     setWrapping(true);
     setSpacing(CalcUtil::instance()->itemSpacing());
+
+    QScroller::grabGesture(this, QScroller::TouchGesture);
+    QScroller::grabGesture(this, QScroller::LeftMouseButtonGesture);
 
     setStyleSheet("QListView { background-color: transparent;}");
 
@@ -64,9 +68,7 @@ void ListView::mouseMoveEvent(QMouseEvent *e)
 {
     const QModelIndex &idx = indexAt(e->pos());
 
-    if (idx.isValid()) {
-        emit entered(idx);
-    }
+    emit entered(idx);
 }
 
 void ListView::mousePressEvent(QMouseEvent *e)
@@ -85,7 +87,7 @@ void ListView::mousePressEvent(QMouseEvent *e)
 void ListView::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton) {
-        emit requestHideLauncher();
+//        emit requestHideLauncher();
     }
 
     QListView::mouseReleaseEvent(e);

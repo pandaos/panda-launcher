@@ -1,6 +1,7 @@
 #include "searchedit.h"
 #include "utils.h"
 #include <QHBoxLayout>
+#include <QPainter>
 #include <QTimer>
 #include <QEvent>
 
@@ -35,8 +36,8 @@ SearchEdit::SearchEdit(QWidget *parent)
 //    layout->addWidget(m_floatWidget);
 //    setLayout(layout);
 
-    setTextMargins(20, 0, 5, 0);
-    setContextMenuPolicy(Qt::NoContextMenu);
+    setAttribute(Qt::WA_TranslucentBackground);
+    setTextMargins(30, 0, 5, 0);
     setFocusPolicy(Qt::ClickFocus);
     setFixedHeight(30);
     setFixedWidth(300);
@@ -58,7 +59,7 @@ void SearchEdit::normalMode()
 void SearchEdit::editMode()
 {
     m_placeholderText->hide();
-    m_floatWidget->move(-20, 0);
+    m_floatWidget->move(-16 - 6, 0);
 }
 
 bool SearchEdit::event(QEvent *e)

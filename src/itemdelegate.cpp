@@ -70,6 +70,30 @@ void ItemDelegate::setCurrentIndex(const QModelIndex &idx)
     emit requestUpdate(m_currentIndex);
 }
 
+const QPair<QString, bool> holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect)
+{
+    const int textFlag = Qt::AlignTop | Qt::AlignHCenter | Qt::TextWordWrap;
+
+    if (rect.contains(fm.boundingRect(rect, textFlag, text)))
+        return QPair<QString, bool>(text, true);
+
+    QString str(text + "...");
+
+    while (true)
+    {
+        if (str.size() < 4)
+            break;
+
+        QRect boundingRect = fm.boundingRect(rect, textFlag, str);
+        if (rect.contains(boundingRect))
+            break;
+
+        str.remove(str.size() - 4, 1);
+    }
+
+    return QPair<QString, bool>(str, false);
+}
+
 void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QRect rect = itemBoundingRect(option.rect);
@@ -81,8 +105,9 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     const bool isCurrent = index == m_currentIndex;
     if (isCurrent) {
+        int radius = rect.width() * 0.2;
         painter->setBrush(QColor(0, 0, 0, 50));
-        painter->drawRoundedRect(rect, 10, 10);
+        painter->drawRoundedRect(rect, radius, radius);
     }
 
     int iconSize = rect.width() * 0.4;
@@ -106,12 +131,14 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                            rect.y() + textTopMargin,
                            rect.width(),
                            rect.height());
+
     QString appName = index.data(ListModel::AppNameRole).toString();
+    const QPair<QString, bool> appTextResolvedInfo = holdTextInRect(painter->fontMetrics(), appName, textRect);
     painter->setPen(QColor(0, 0, 0, 100));
-    painter->drawText(textRect.adjusted(0, 2, 2, 0), appName, appNameOption);
-    painter->drawText(textRect.adjusted(0, 1, 1, 0), appName, appNameOption);
+    painter->drawText(textRect.adjusted(0.7, 1, 0.7, 1), appTextResolvedInfo.first, appNameOption);
+    painter->drawText(textRect.adjusted(-0.7, 1, -0.7, 1), appTextResolvedInfo.first, appNameOption);
     painter->setPen(Qt::white);
-    painter->drawText(textRect, appName, appNameOption);
+    painter->drawText(textRect, appTextResolvedInfo.first, appNameOption);
 }
 
 QSize ItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
