@@ -130,15 +130,25 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     QRect textRect = QRect(rect.x(),
                            rect.y() + textTopMargin,
                            rect.width(),
-                           rect.height());
+                           rect.height() - textTopMargin);
 
-    QString appName = index.data(ListModel::AppNameRole).toString();
-    const QPair<QString, bool> appTextResolvedInfo = holdTextInRect(painter->fontMetrics(), appName, textRect);
+    QString displayName = index.data(ListModel::AppNameRole).toString();
+    QFontMetrics fm(painter->fontMetrics());
+    displayName = fm.elidedText(displayName, Qt::ElideRight, textRect.width() - 40);
     painter->setPen(QColor(0, 0, 0, 100));
-    painter->drawText(textRect.adjusted(0.7, 1, 0.7, 1), appTextResolvedInfo.first, appNameOption);
-    painter->drawText(textRect.adjusted(-0.7, 1, -0.7, 1), appTextResolvedInfo.first, appNameOption);
+    painter->drawText(textRect.adjusted(0.5, 1.5, 0.5, 1.5), Qt::AlignHCenter | Qt::AlignTop, displayName);
+    painter->drawText(textRect.adjusted(0.5, -0.5, 0.5, -0.5), Qt::AlignHCenter | Qt::AlignTop, displayName);
+    painter->drawText(textRect.adjusted(1, -0.6, 1, -0.6), Qt::AlignHCenter | Qt::AlignTop, displayName);
     painter->setPen(Qt::white);
-    painter->drawText(textRect, appTextResolvedInfo.first, appNameOption);
+    painter->drawText(textRect, Qt::AlignHCenter | Qt::AlignTop, displayName);
+
+//    QString appName = index.data(ListModel::AppNameRole).toString();
+//    const QPair<QString, bool> appTextResolvedInfo = holdTextInRect(painter->fontMetrics(), appName, textRect);
+//    painter->setPen(QColor(0, 0, 0, 100));
+//    painter->drawText(textRect.adjusted(0.7, 1, 0.7, 1), appTextResolvedInfo.first, appNameOption);
+//    painter->drawText(textRect.adjusted(-0.7, 1, -0.7, 1), appTextResolvedInfo.first, appNameOption);
+//    painter->setPen(Qt::white);
+//    painter->drawText(textRect, appTextResolvedInfo.first, appNameOption);
 }
 
 QSize ItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

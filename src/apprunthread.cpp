@@ -1,4 +1,4 @@
-#include "apprunthread.h"
+ #include "apprunthread.h"
 #include <stdlib.h>
 
 AppRunThread::AppRunThread(const QString &exec, QObject *parent)
