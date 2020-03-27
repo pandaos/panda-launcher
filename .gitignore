@@ -52,3 +52,9 @@ compile_commands.json
 *creator.user*
 
 build/*
+
+# VS Code
+.vscode
+
+# CLion
+.idea
