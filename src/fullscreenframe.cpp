@@ -67,7 +67,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     setFocusPolicy(Qt::ClickFocus);
 
-    KWindowEffects::enableBlurBehind(winId(), true);
+    // KWindowEffects::enableBlurBehind(winId(), true);
     // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
     m_mainLayout->setContentsMargins(200, 70, 200, 120);
@@ -76,6 +76,8 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
     initContentMargins();
+    initBackground();
+    initSize();
 
     m_itemDelegate->setCurrentIndex(QModelIndex());
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
@@ -86,8 +88,6 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_listView->installEventFilter(this);
     m_listView->viewport()->installEventFilter(this);
     m_searchEdit->installEventFilter(this);
-
-    initSize();
 
     connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
     connect(m_listView, &QListView::entered, m_itemDelegate, &ItemDelegate::setCurrentIndex);
@@ -156,6 +156,22 @@ void FullScreenFrame::initContentMargins()
     m_dockSettingsWatcher->addPath(m_dockConfigPath);
 }
 
+void FullScreenFrame::initBackground()
+{
+    QSettings settings(QString("%1/pandafm/default/settings.conf")
+                       .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)), QSettings::IniFormat);
+    settings.beginGroup("Desktop");
+    const QSize &size = qApp->primaryScreen()->size() * qApp->primaryScreen()->devicePixelRatio();
+    m_backgroundPixmap.load(settings.value("Wallpaper").toString());
+    m_backgroundPixmap = m_backgroundPixmap.scaled(size,
+                                                   Qt::KeepAspectRatioByExpanding,
+                                                   Qt::SmoothTransformation);
+    m_backgroundPixmap.setDevicePixelRatio(devicePixelRatioF());
+    settings.endGroup();
+
+    FullScreenFrame::update();
+}
+
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::RightButton)
@@ -199,11 +215,16 @@ void FullScreenFrame::showEvent(QShowEvent *e)
 
 void FullScreenFrame::paintEvent(QPaintEvent *e)
 {
-    return QWidget::paintEvent(e);
     QPainter painter(this);
-    QColor color("#000000");
-    color.setAlpha(80);
-    painter.fillRect(rect(), color);
+    //QColor color("#000000");
+    //color.setAlpha(80);
+    //painter.fillRect(rect(), color);
+
+    QScreen const *s = qApp->primaryScreen();
+    const QRect &geom = s->geometry();
+    QRect tr(QPoint(0, 0), geom.size());
+    painter.drawPixmap(tr, m_backgroundPixmap, QRect(tr.topLeft(),
+                                                     tr.size() * m_backgroundPixmap.devicePixelRatioF()));
 }
 
 bool FullScreenFrame::event(QEvent *e)

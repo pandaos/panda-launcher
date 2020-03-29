@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(panda-laucher)
+project(panda-launcher)
 
-set(TARGET panda-laucher)
+set(TARGET panda-launcher)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -9,7 +9,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 file (GLOB_RECURSE SRCS
-  "${panda-laucher_SOURCE_DIR}/src/*.cpp"
+  "${panda-launcher_SOURCE_DIR}/src/*.cpp"
 )
 
 set(SOURCES ${SRCS})

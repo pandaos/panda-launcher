@@ -24,6 +24,7 @@
 int main(int argc, char *argv[])
 {
     QtSingleApplication app("panda-launcher", argc, argv);
+    app.setApplicationName("panda-launcher");
     app.setQuitOnLastWindowClosed(false);
 
     if (app.isRunning()) {

@@ -46,6 +46,7 @@ private:
     void onPopupMenu(const QPoint &p, const QModelIndex &idx);
 
     void initContentMargins();
+    void initBackground();
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -67,6 +68,8 @@ private:
 
     QString m_dockConfigPath;
     QFileSystemWatcher *m_dockSettingsWatcher;
+
+    QPixmap m_backgroundPixmap;
 };
 
 #endif // FULLSCREENFRAME_H
