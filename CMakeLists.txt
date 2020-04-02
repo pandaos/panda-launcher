@@ -18,7 +18,7 @@ set(HEADERS "")
 set(FORMS "")
 set(RESOURCES src/resources.qrc)
 
-set(QT Core Gui Widgets Network)
+set(QT Core Gui Widgets Network Concurrent)
 find_package(Qt5 REQUIRED ${QT})
 find_package(PkgConfig REQUIRED)
 
@@ -38,6 +38,7 @@ target_link_libraries(${TARGET}
         Qt5::Gui
         Qt5::Widgets
         Qt5::Network
+        Qt5::Concurrent
         QtSingleApplication
         KF5::WindowSystem
 )

@@ -27,31 +27,12 @@
 #include <QPainter>
 #include <QDebug>
 #include <QTimer>
+#include <QtConcurrent>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
 
-#include <QGuiApplication>
-
-
 #define PADDING 100
-
-// extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
-
-QT_BEGIN_NAMESPACE
-extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed = 0);
-QT_END_NAMESPACE
-
-const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
-{
-    QPoint offset;
-    while (w && w != self) {
-        offset += w->pos();
-        w = qobject_cast<QWidget *>(w->parent());
-    }
-
-    return offset;
-}
 
 FullScreenFrame::FullScreenFrame(QWidget *parent)
     : QWidget(parent),
@@ -62,28 +43,23 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
       m_appsManager(AppsManager::instance()),
       m_searchEdit(new SearchEdit),
       m_calcUtil(CalcUtil::instance()),
-      m_dockSettingsWatcher(new QFileSystemWatcher(this))
+      m_fileWatcher(new QFileSystemWatcher(this))
 {
     // init dock settings.
     m_dockConfigPath = QString("%1/panda-dock/config.conf")
             .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
-    m_dockSettingsWatcher->addPath(m_dockConfigPath);
-    connect(m_dockSettingsWatcher, &QFileSystemWatcher::fileChanged, this, [=] (const QString &filePath) {
-        if (filePath == QString("%1/pandafm/default/settings.conf")
-                .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))) {
-            initBackground();
-        } else {
-            QTimer::singleShot(100, this, &FullScreenFrame::initContentMargins);
-        }
-    });
+    m_fmConfigPath = QString("%1/pandafm/default/settings.conf")
+            .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
 
+    m_fileWatcher->addPath(m_dockConfigPath);
+    m_fileWatcher->addPath(m_fmConfigPath);
+    connect(m_fileWatcher, &QFileSystemWatcher::fileChanged, this, &FullScreenFrame::onConfigFileChanged);
+
+    // Init attributes.
+    setAttribute(Qt::WA_TranslucentBackground, false);
     setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground, false);
     setFocusPolicy(Qt::ClickFocus);
-
-    // KWindowEffects::enableBlurBehind(winId(), true);
-    // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     m_mainLayout->addSpacing(20);
@@ -167,8 +143,6 @@ void FullScreenFrame::initContentMargins()
     }
 
     m_mainLayout->setContentsMargins(margins);
-    m_dockSettingsWatcher->addPath(m_dockConfigPath);
-
     m_calcUtil->calc(this->size() - QSize(margins.left() + margins.right(), 0));
 }
 
@@ -189,8 +163,17 @@ void FullScreenFrame::initBackground()
 
     FullScreenFrame::update();
 
-    m_dockSettingsWatcher->addPath(QString("%1/pandafm/default/settings.conf")
-                                   .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)));
+    m_fileWatcher->addPath(QString("%1/pandafm/default/settings.conf")
+                           .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)));
+}
+
+void FullScreenFrame::onConfigFileChanged(const QString &filePath)
+{
+    if (filePath == m_dockConfigPath) {
+        QtConcurrent::run(this, &FullScreenFrame::initContentMargins);
+    } else if (filePath == m_fmConfigPath) {
+        QtConcurrent::run(this, &FullScreenFrame::initBackground);
+    }
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)

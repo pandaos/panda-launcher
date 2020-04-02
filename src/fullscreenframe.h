@@ -48,6 +48,8 @@ private:
     void initContentMargins();
     void initBackground();
 
+    void onConfigFileChanged(const QString &filePath);
+
 protected:
     void mousePressEvent(QMouseEvent *e) override;
     bool eventFilter(QObject *o, QEvent *e) override;
@@ -67,7 +69,8 @@ private:
     CalcUtil *m_calcUtil;
 
     QString m_dockConfigPath;
-    QFileSystemWatcher *m_dockSettingsWatcher;
+    QString m_fmConfigPath;
+    QFileSystemWatcher *m_fileWatcher;
 
     QPixmap m_backgroundPixmap;
 };
