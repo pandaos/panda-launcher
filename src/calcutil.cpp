@@ -29,8 +29,8 @@ void CalcUtil::calc(const QSize &containerSize)
     const int screenWidth = pr.width();
     int remainWidth = screenWidth - calculateBesidePadding(screenWidth) * 2;
 
-    const int itemWidth = pr.width() <= 1440 ? 170 : 200;
-    const int spacing = pr.width() <= 1440 ? 10 : 14;
+    const int itemWidth = pr.width() <= 1440 ? 160 : 190;
+    const int spacing = pr.width() <= 1440 ? 15 : 20;
     const int columns = remainWidth / itemWidth;
 
     const int calc_item_width = (double(containerSize.width()) - spacing * columns * 2) / columns + 0.5;

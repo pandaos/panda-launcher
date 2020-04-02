@@ -18,6 +18,7 @@
  */
 
 #include "fullscreenframe.h"
+#include "utils.h"
 #include <QApplication>
 #include <QScreen>
 #include <QKeyEvent>
@@ -30,7 +31,16 @@
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
 
-#define PADDING 200
+#include <QGuiApplication>
+
+
+#define PADDING 100
+
+// extern void qt_blurImage(QImage &blurImage, qreal radius, bool quality, int transposed);
+
+QT_BEGIN_NAMESPACE
+extern void qt_blurImage(QPainter *p, QImage &blurImage, qreal radius, bool quality, bool alphaOnly, int transposed = 0);
+QT_END_NAMESPACE
 
 const QPoint widgetRelativeOffset(const QWidget *const self, const QWidget *w)
 {
@@ -58,19 +68,23 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_dockConfigPath = QString("%1/panda-dock/config.conf")
             .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
     m_dockSettingsWatcher->addPath(m_dockConfigPath);
-    connect(m_dockSettingsWatcher, &QFileSystemWatcher::fileChanged, this, [=] {
-        QTimer::singleShot(100, this, &FullScreenFrame::initContentMargins);
+    connect(m_dockSettingsWatcher, &QFileSystemWatcher::fileChanged, this, [=] (const QString &filePath) {
+        if (filePath == QString("%1/pandafm/default/settings.conf")
+                .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation))) {
+            initBackground();
+        } else {
+            QTimer::singleShot(100, this, &FullScreenFrame::initContentMargins);
+        }
     });
 
     setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowFlags(Qt::FramelessWindowHint);
-    setAttribute(Qt::WA_TranslucentBackground);
+    setAttribute(Qt::WA_TranslucentBackground, false);
     setFocusPolicy(Qt::ClickFocus);
 
     // KWindowEffects::enableBlurBehind(winId(), true);
     // KWindowEffects::slideWindow(winId(), KWindowEffects::BottomEdge);
 
-    m_mainLayout->setContentsMargins(200, 70, 200, 120);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
     m_mainLayout->addSpacing(20);
     m_mainLayout->addWidget(m_listView);
@@ -154,6 +168,8 @@ void FullScreenFrame::initContentMargins()
 
     m_mainLayout->setContentsMargins(margins);
     m_dockSettingsWatcher->addPath(m_dockConfigPath);
+
+    m_calcUtil->calc(this->size() - QSize(margins.left() + margins.right(), 0));
 }
 
 void FullScreenFrame::initBackground()
@@ -164,12 +180,17 @@ void FullScreenFrame::initBackground()
     const QSize &size = qApp->primaryScreen()->size() * qApp->primaryScreen()->devicePixelRatio();
     m_backgroundPixmap.load(settings.value("Wallpaper").toString());
     m_backgroundPixmap = m_backgroundPixmap.scaled(size,
-                                                   Qt::KeepAspectRatioByExpanding,
+                                                   Qt::IgnoreAspectRatio,
                                                    Qt::SmoothTransformation);
     m_backgroundPixmap.setDevicePixelRatio(devicePixelRatioF());
     settings.endGroup();
 
+    m_backgroundPixmap = Utils::blurPixmap(m_backgroundPixmap, 200);
+
     FullScreenFrame::update();
+
+    m_dockSettingsWatcher->addPath(QString("%1/pandafm/default/settings.conf")
+                                   .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)));
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
@@ -190,7 +211,7 @@ bool FullScreenFrame::eventFilter(QObject *o, QEvent *e)
             return true;
         }
     } else if (o == m_listView->viewport() && e->type() == QEvent::Resize) {
-        m_calcUtil->calc(static_cast<QResizeEvent *>(e)->size() - QSize(PADDING + PADDING, 0));
+//        m_calcUtil->calc(static_cast<QResizeEvent *>(e)->size() - QSize(PADDING + PADDING, 0));
     }
 
     if (e->type() == QEvent::KeyPress)

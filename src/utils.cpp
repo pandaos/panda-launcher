@@ -66,13 +66,11 @@ QPixmap Utils::renderSVG(const QString &path, const QSize &size)
     return pixmap;
 }
 
-void Utils::blurImage(const QString &path)
+QPixmap Utils::blurPixmap(QPixmap pixmap, qreal radius)
 {
-    QPixmap pixmap(path);
-    QPixmap target(pixmap.size());
-    QPainter painter(&target);
-    QImage img = pixmap.toImage();
-    qt_blurImage(&painter, img, 100, true, false);
+    QPainter painter(&pixmap);
+    QImage srcImg = pixmap.toImage();
+    qt_blurImage(&painter, srcImg, radius, true, false);
     painter.end();
-    target.save(path);
+    return pixmap;
 }
