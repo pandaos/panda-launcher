@@ -28,6 +28,10 @@
 #include <QDebug>
 #include <QTimer>
 #include <QtConcurrent>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusMessage>
+#include <QDBusReply>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
@@ -48,12 +52,14 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     // init dock settings.
     m_dockConfigPath = QString("%1/panda-dock/config.conf")
             .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
-    m_fmConfigPath = QString("%1/pandafm/default/settings.conf")
-            .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
 
     m_fileWatcher->addPath(m_dockConfigPath);
-    m_fileWatcher->addPath(m_fmConfigPath);
     connect(m_fileWatcher, &QFileSystemWatcher::fileChanged, this, &FullScreenFrame::onConfigFileChanged);
+
+    QDBusInterface *interface = new QDBusInterface("org.panda.files", "/Files",
+                                                   "org.panda.Files",
+                                                   QDBusConnection::sessionBus());
+    QObject::connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
 
     // Init attributes.
     setAttribute(Qt::WA_TranslucentBackground, false);
@@ -148,31 +154,27 @@ void FullScreenFrame::initContentMargins()
 
 void FullScreenFrame::initBackground()
 {
-    QSettings settings(QString("%1/pandafm/default/settings.conf")
-                       .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)), QSettings::IniFormat);
-    settings.beginGroup("Desktop");
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    QDBusInterface iface(QLatin1String("org.panda.files"), QStringLiteral("/Files"), QLatin1String("org.panda.Files"), dbus, this);
+
+    if (!iface.isValid())
+        return;
+
     const QSize &size = qApp->primaryScreen()->size() * qApp->primaryScreen()->devicePixelRatio();
-    m_backgroundPixmap.load(settings.value("Wallpaper").toString());
+    m_backgroundPixmap.load(iface.property("wallpaper").toString());
     m_backgroundPixmap = m_backgroundPixmap.scaled(size,
                                                    Qt::IgnoreAspectRatio,
                                                    Qt::SmoothTransformation);
     m_backgroundPixmap.setDevicePixelRatio(devicePixelRatioF());
-    settings.endGroup();
-
     m_backgroundPixmap = Utils::blurPixmap(m_backgroundPixmap, 200);
 
     FullScreenFrame::update();
-
-    m_fileWatcher->addPath(QString("%1/pandafm/default/settings.conf")
-                           .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)));
 }
 
 void FullScreenFrame::onConfigFileChanged(const QString &filePath)
 {
     if (filePath == m_dockConfigPath) {
         QtConcurrent::run(this, &FullScreenFrame::initContentMargins);
-    } else if (filePath == m_fmConfigPath) {
-        QtConcurrent::run(this, &FullScreenFrame::initBackground);
     }
 }
 

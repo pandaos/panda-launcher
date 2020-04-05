@@ -44,11 +44,11 @@ private:
     void hideLauncher();
     void onSearchTextChanged(const QString &text);
     void onPopupMenu(const QPoint &p, const QModelIndex &idx);
+    void onConfigFileChanged(const QString &filePath);
 
+private slots:
     void initContentMargins();
     void initBackground();
-
-    void onConfigFileChanged(const QString &filePath);
 
 protected:
     void mousePressEvent(QMouseEvent *e) override;
@@ -69,7 +69,6 @@ private:
     CalcUtil *m_calcUtil;
 
     QString m_dockConfigPath;
-    QString m_fmConfigPath;
     QFileSystemWatcher *m_fileWatcher;
 
     QPixmap m_backgroundPixmap;
