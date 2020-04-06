@@ -105,7 +105,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     const bool isCurrent = index == m_currentIndex;
     if (isCurrent) {
-        int radius = rect.width() * 0.2;
+        int radius = rect.width() * 0.1;
         painter->setBrush(QColor(0, 0, 0, 50));
         painter->drawRoundedRect(rect, radius, radius);
     }
