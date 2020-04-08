@@ -32,6 +32,7 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDBusReply>
+#include <QDBusServiceWatcher>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
@@ -59,7 +60,19 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     QDBusInterface *interface = new QDBusInterface("org.panda.files", "/Files",
                                                    "org.panda.Files",
                                                    QDBusConnection::sessionBus());
-    QObject::connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
+    if (interface->isValid())
+        connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
+
+    QDBusServiceWatcher *serviceWatcher = new QDBusServiceWatcher("org.panda.files", QDBusConnection::sessionBus(),
+                                                                  QDBusServiceWatcher::WatchForRegistration);
+    connect(serviceWatcher, &QDBusServiceWatcher::serviceRegistered, this, [=] {
+        QDBusInterface *iface = new QDBusInterface("org.panda.files", "/Files",
+                                                       "org.panda.Files",
+                                                       QDBusConnection::sessionBus());
+        connect(iface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
+
+        initBackground();
+    });
 
     // Init attributes.
     setAttribute(Qt::WA_TranslucentBackground, false);
