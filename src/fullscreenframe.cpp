@@ -18,7 +18,9 @@
  */
 
 #include "fullscreenframe.h"
+#include "applicationadaptor.h"
 #include "utils.h"
+
 #include <QApplication>
 #include <QScreen>
 #include <QKeyEvent>
@@ -57,9 +59,17 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_fileWatcher->addPath(m_dockConfigPath);
     connect(m_fileWatcher, &QFileSystemWatcher::fileChanged, this, &FullScreenFrame::onConfigFileChanged);
 
+    // init dbus
+    {
+        QDBusConnection dbus = QDBusConnection::sessionBus();
+        if (dbus.registerService(QLatin1String("org.panda.launcher"))) {
+            new ApplicationAdaptor(this);
+            dbus.registerObject("/Launcher", this);
+        }
+    }
+
     QDBusInterface *interface = new QDBusInterface("org.panda.files", "/Files",
-                                                   "org.panda.Files",
-                                                   QDBusConnection::sessionBus());
+                                                   "org.panda.Files", QDBusConnection::sessionBus());
     if (interface->isValid())
         connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
 
@@ -67,8 +77,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
                                                                   QDBusServiceWatcher::WatchForRegistration);
     connect(serviceWatcher, &QDBusServiceWatcher::serviceRegistered, this, [=] {
         QDBusInterface *iface = new QDBusInterface("org.panda.files", "/Files",
-                                                       "org.panda.Files",
-                                                       QDBusConnection::sessionBus());
+                                                   "org.panda.Files", QDBusConnection::sessionBus());
         connect(iface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
 
         initBackground();
@@ -97,6 +106,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_listView->installEventFilter(this);
     m_listView->viewport()->installEventFilter(this);
     m_searchEdit->installEventFilter(this);
+    hideLauncher();
 
     connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
     connect(m_listView, &QListView::entered, m_itemDelegate, &ItemDelegate::setCurrentIndex);
@@ -111,6 +121,22 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }
 
+void FullScreenFrame::showLauncher()
+{
+    QWidget::setVisible(true);
+    QWidget::activateWindow();
+}
+
+void FullScreenFrame::hideLauncher()
+{
+    QWidget::setVisible(false);
+}
+
+void FullScreenFrame::toggleLauncher()
+{
+    isVisible() ? hideLauncher() : showLauncher();
+}
+
 void FullScreenFrame::initSize()
 {
     QRect geometry = qApp->primaryScreen()->geometry();
@@ -118,11 +144,6 @@ void FullScreenFrame::initSize()
     QWidget::setFixedSize(geometry.size());
 
     m_calcUtil->calc(geometry.size()- QSize(PADDING + PADDING, 0));
-}
-
-void FullScreenFrame::hideLauncher()
-{
-    QWidget::setVisible(false);
 }
 
 void FullScreenFrame::onSearchTextChanged(const QString &text)

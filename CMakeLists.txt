@@ -30,9 +30,8 @@ include(KDECMakeSettings)
 include(KDECompilerSettings)
 include(FeatureSummary)
 find_package(KF5 REQUIRED COMPONENTS WindowSystem)
-add_subdirectory(QtSingleApplication)
+
 add_executable(${TARGET} ${SOURCES} ${HEADERS} ${FORMS} ${RESOURCES})
-target_include_directories(${TARGET} PRIVATE QtSingleApplication)
 target_link_libraries(${TARGET}
         Qt5::Core
         Qt5::Gui
@@ -40,7 +39,6 @@ target_link_libraries(${TARGET}
         Qt5::DBus
         Qt5::Network
         Qt5::Concurrent
-        QtSingleApplication
         KF5::WindowSystem
 )
 

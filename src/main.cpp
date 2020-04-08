@@ -18,24 +18,24 @@
  */
 
 #include "fullscreenframe.h"
-#include <QtSingleApplication>
 #include <QApplication>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
-    QtSingleApplication app("panda-launcher", argc, argv);
+    QApplication app(argc, argv);
     app.setApplicationName("panda-launcher");
     app.setQuitOnLastWindowClosed(false);
 
-    if (app.isRunning()) {
-        app.sendMessage("show");
-        return 0;
+    QDBusConnection dbus = QDBusConnection::sessionBus();
+    if (!dbus.registerService(QLatin1String("org.panda.launcher"))) {
+        QDBusInterface iface("org.panda.launcher", "/Launcher", "org.panda.Launcher", dbus, &app);
+        iface.call("toggleLauncher");
+        return -1;
     }
 
     FullScreenFrame w;
-    w.show();
-
-    app.setActivationWindow(&w);
-
     return app.exec();
 }

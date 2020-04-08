@@ -39,9 +39,13 @@ class FullScreenFrame : public QWidget
 public:
     explicit FullScreenFrame(QWidget *parent = nullptr);
 
+public slots:
+    void showLauncher();
+    void hideLauncher();
+    void toggleLauncher();
+
 private:
     void initSize();
-    void hideLauncher();
     void onSearchTextChanged(const QString &text);
     void onPopupMenu(const QPoint &p, const QModelIndex &idx);
     void onConfigFileChanged(const QString &filePath);
