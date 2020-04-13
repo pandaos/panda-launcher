@@ -78,7 +78,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
                                                    "org.panda.Files", QDBusConnection::sessionBus());
         connect(iface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
 
-        initBackground();
+        delayUpdateBackground();
     });
 
     // Init attributes.
@@ -144,7 +144,7 @@ void FullScreenFrame::initSize()
     initContentMargins();
 
     if (m_frameRect != geometry) {
-        initBackground();
+        delayUpdateBackground();
     }
 
     m_frameRect = geometry;
@@ -217,6 +217,11 @@ void FullScreenFrame::onConfigFileChanged(const QString &filePath)
     if (filePath == m_dockConfigPath) {
         QtConcurrent::run(this, &FullScreenFrame::initSize);
     }
+}
+
+void FullScreenFrame::delayUpdateBackground()
+{
+    QTimer::singleShot(0, this, &FullScreenFrame::initBackground);
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)

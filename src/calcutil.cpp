@@ -32,15 +32,12 @@ void CalcUtil::calc()
 
     remainWidth = screenWidth - m_margins.left() - m_margins.right();
 
-    const int itemWidth = pr.width() <= 1440 ? 160 : 190;
-    const int spacing = pr.width() <= 1440 ? 15 : 20;
+    const int itemWidth = pr.width() <= 1440 ? 160 : 200;
+    const int spacing = pr.width() <= 1440 ? 20 : 25;
     const int columns = remainWidth / itemWidth;
 
-    const int calcItemWidth = (double(frameSize.width()) - spacing * columns * 2) / columns + 0.5;
-    const int calcSpacing = (double(frameSize.width()) - calcItemWidth * columns) / (columns * 2) - 1;
-
-    m_itemSpacing = calcSpacing;
-    m_itemSize = calcItemWidth;
+    m_itemSize = (double(frameSize.width()) - spacing * columns * 2) / columns + 0.5;
+    m_itemSpacing = (double(frameSize.width()) - m_itemSize * columns) / (columns * 2) - 1;
     m_columnCount = columns;
 
     emit layoutChanged();
