@@ -43,13 +43,13 @@ public slots:
     void showLauncher();
     void hideLauncher();
     void toggleLauncher();
+    void delayUpdateBackground();
 
 private:
     void initSize();
     void onSearchTextChanged(const QString &text);
     void onPopupMenu(const QPoint &p, const QModelIndex &idx);
     void onConfigFileChanged(const QString &filePath);
-    void delayUpdateBackground();
 
 private slots:
     void initContentMargins();

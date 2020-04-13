@@ -69,14 +69,14 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     QDBusInterface *interface = new QDBusInterface("org.panda.files", "/Files",
                                                    "org.panda.Files", QDBusConnection::sessionBus());
     if (interface->isValid())
-        connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
+        connect(interface, SIGNAL(wallpaperChanged()), this, SLOT(delayUpdateBackground()));
 
     QDBusServiceWatcher *serviceWatcher = new QDBusServiceWatcher("org.panda.files", QDBusConnection::sessionBus(),
                                                                   QDBusServiceWatcher::WatchForRegistration);
     connect(serviceWatcher, &QDBusServiceWatcher::serviceRegistered, this, [=] {
         QDBusInterface *iface = new QDBusInterface("org.panda.files", "/Files",
                                                    "org.panda.Files", QDBusConnection::sessionBus());
-        connect(iface, SIGNAL(wallpaperChanged()), this, SLOT(initBackground()));
+        connect(iface, SIGNAL(wallpaperChanged()), this, SLOT(delayUpdateBackground()));
 
         delayUpdateBackground();
     });
@@ -93,7 +93,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setLayout(m_mainLayout);
 
     initSize();
-    initBackground();
+    delayUpdateBackground();
 
     m_itemDelegate->setCurrentIndex(QModelIndex());
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
@@ -135,6 +135,11 @@ void FullScreenFrame::toggleLauncher()
     isVisible() ? hideLauncher() : showLauncher();
 }
 
+void FullScreenFrame::delayUpdateBackground()
+{
+    QTimer::singleShot(0, this, &FullScreenFrame::initBackground);
+}
+
 void FullScreenFrame::initSize()
 {
     QRect geometry = qApp->primaryScreen()->geometry();
@@ -172,7 +177,7 @@ void FullScreenFrame::initContentMargins()
     const int position = settings.value("position").toInt();
     const int padding = 10;
     // 计算边缘 padding 值
-    const int edgePadding = qApp->primaryScreen()->size().width() * 0.1;
+    const int edgePadding = qApp->primaryScreen()->size().width() * 0.05;
     QMargins margins;
 
     // dock position: bottom 0, left 1
@@ -217,11 +222,6 @@ void FullScreenFrame::onConfigFileChanged(const QString &filePath)
     if (filePath == m_dockConfigPath) {
         QtConcurrent::run(this, &FullScreenFrame::initSize);
     }
-}
-
-void FullScreenFrame::delayUpdateBackground()
-{
-    QTimer::singleShot(0, this, &FullScreenFrame::initBackground);
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)

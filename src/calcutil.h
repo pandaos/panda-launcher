@@ -13,8 +13,6 @@ public:
     static CalcUtil *instance();
     explicit CalcUtil(QObject *parent = nullptr);
 
-    int calculateBesidePadding(const int screenWidth);
-
     void calc();
 
     inline int itemSpacing() const { return m_itemSpacing; };

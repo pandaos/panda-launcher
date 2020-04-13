@@ -110,7 +110,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     QString displayName = index.data(ListModel::AppNameRole).toString();
     QFontMetrics fm(painter->fontMetrics());
-    displayName = fm.elidedText(displayName, Qt::ElideRight, textRect.width() - 40);
+    displayName = fm.elidedText(displayName, Qt::ElideRight, textRect.width() - 20);
     painter->setPen(QColor(0, 0, 0, 100));
     painter->drawText(textRect.adjusted(0.5, 1.5, 0.5, 1.5), Qt::AlignHCenter | Qt::AlignTop, displayName);
     painter->drawText(textRect.adjusted(0.5, -0.5, 0.5, -0.5), Qt::AlignHCenter | Qt::AlignTop, displayName);
