@@ -1,22 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 project(panda-launcher)
 
-set(TARGET panda-launcher)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-file (GLOB_RECURSE SRCS
-  "${panda-launcher_SOURCE_DIR}/src/*.cpp"
-)
-
-set(SOURCES ${SRCS})
-set(HEADERS "")
-
-set(FORMS "")
-set(RESOURCES src/resources.qrc)
 
 set(QT Core Gui Widgets DBus Network Concurrent)
 find_package(Qt5 REQUIRED ${QT})
@@ -31,15 +20,5 @@ include(KDECompilerSettings)
 include(FeatureSummary)
 find_package(KF5 REQUIRED COMPONENTS WindowSystem)
 
-add_executable(${TARGET} ${SOURCES} ${HEADERS} ${FORMS} ${RESOURCES})
-target_link_libraries(${TARGET}
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::DBus
-        Qt5::Network
-        Qt5::Concurrent
-        KF5::WindowSystem
-)
-
-install(TARGETS ${TARGET} DESTINATION /usr/bin)
+add_subdirectory(fullscreen)
+add_subdirectory(keyboard)

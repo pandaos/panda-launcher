@@ -8,7 +8,7 @@
  * Do not edit! All changes made to it will be lost.
  */
 
-#include "src/applicationadaptor.h"
+#include "applicationadaptor.h"
 #include <QtCore/QMetaObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
