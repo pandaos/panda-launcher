@@ -39,8 +39,6 @@
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
 
-#define PADDING 100
-
 FullScreenFrame::FullScreenFrame(QWidget *parent)
     : QWidget(parent),
       m_mainLayout(new QVBoxLayout),
@@ -93,9 +91,9 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_mainLayout->addSpacing(20);
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
-    initContentMargins();
-    initBackground();
+
     initSize();
+    initBackground();
 
     m_itemDelegate->setCurrentIndex(QModelIndex());
     m_listView->setVerticalScrollMode(QListView::ScrollPerPixel);
@@ -143,7 +141,7 @@ void FullScreenFrame::initSize()
     QWidget::setGeometry(geometry);
     QWidget::setFixedSize(geometry.size());
 
-    m_calcUtil->calc(geometry.size()- QSize(PADDING + PADDING, 0));
+    initContentMargins();
 }
 
 void FullScreenFrame::onSearchTextChanged(const QString &text)
@@ -165,25 +163,28 @@ void FullScreenFrame::initContentMargins()
 {
     QSettings settings(m_dockConfigPath, QSettings::IniFormat);
     const int iconSize = settings.value("icon_size").toInt();
-    // dock position: bottom 0, left 1
     const int position = settings.value("position").toInt();
     const int padding = 10;
+    // 计算边缘 padding 值
+    const int edgePadding = qApp->primaryScreen()->size().width() * 0.1;
     QMargins margins;
 
+    // dock position: bottom 0, left 1
     if (position == 0) {
-        margins.setLeft(200);
-        margins.setRight(200);
+        margins.setLeft(edgePadding);
+        margins.setRight(edgePadding);
         margins.setBottom(iconSize + padding * 4);
         margins.setTop(50);
     } else {
-        margins.setLeft(200);
-        margins.setRight(200);
+        margins.setLeft(edgePadding);
+        margins.setRight(edgePadding);
         margins.setBottom(70);
         margins.setTop(50);
     }
 
     m_mainLayout->setContentsMargins(margins);
-    m_calcUtil->calc(this->size() - QSize(margins.left() + margins.right(), 0));
+    m_calcUtil->setMargins(margins);
+    m_calcUtil->calc();
 }
 
 void FullScreenFrame::initBackground()
@@ -208,7 +209,7 @@ void FullScreenFrame::initBackground()
 void FullScreenFrame::onConfigFileChanged(const QString &filePath)
 {
     if (filePath == m_dockConfigPath) {
-        QtConcurrent::run(this, &FullScreenFrame::initContentMargins);
+        QtConcurrent::run(this, &FullScreenFrame::initSize);
     }
 }
 

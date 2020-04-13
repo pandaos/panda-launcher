@@ -23,21 +23,24 @@ int CalcUtil::calculateBesidePadding(const int screenWidth)
     return 130;
 }
 
-void CalcUtil::calc(const QSize &containerSize)
+void CalcUtil::calc()
 {
     const QRect pr = qApp->primaryScreen()->geometry();
     const int screenWidth = pr.width();
     int remainWidth = screenWidth - calculateBesidePadding(screenWidth) * 2;
+    QSize frameSize = pr.size() - QSize(m_margins.left() + m_margins.right(), 0);
+
+    remainWidth = screenWidth - m_margins.left() - m_margins.right();
 
     const int itemWidth = pr.width() <= 1440 ? 160 : 190;
     const int spacing = pr.width() <= 1440 ? 15 : 20;
     const int columns = remainWidth / itemWidth;
 
-    const int calc_item_width = (double(containerSize.width()) - spacing * columns * 2) / columns + 0.5;
-    const int calc_spacing = (double(containerSize.width()) - calc_item_width * columns) / (columns * 2) - 1;
+    const int calcItemWidth = (double(frameSize.width()) - spacing * columns * 2) / columns + 0.5;
+    const int calcSpacing = (double(frameSize.width()) - calcItemWidth * columns) / (columns * 2) - 1;
 
-    m_itemSpacing = calc_spacing;
-    m_itemSize = calc_item_width;
+    m_itemSpacing = calcSpacing;
+    m_itemSize = calcItemWidth;
     m_columnCount = columns;
 
     emit layoutChanged();

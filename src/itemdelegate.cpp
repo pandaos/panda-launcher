@@ -52,8 +52,8 @@ const QPixmap getThemeIcon(const QString &iconName, const int size)
 }
 
 ItemDelegate::ItemDelegate(QObject *parent) :
-    QAbstractItemDelegate(parent)
-    ,m_currentIndex(QModelIndex())
+    QAbstractItemDelegate(parent),
+    m_currentIndex(QModelIndex())
 {
 
 }
@@ -68,30 +68,6 @@ void ItemDelegate::setCurrentIndex(const QModelIndex &idx)
 
     emit requestUpdate(previousIdx);
     emit requestUpdate(m_currentIndex);
-}
-
-const QPair<QString, bool> holdTextInRect(const QFontMetrics &fm, const QString &text, const QRect &rect)
-{
-    const int textFlag = Qt::AlignTop | Qt::AlignHCenter | Qt::TextWordWrap;
-
-    if (rect.contains(fm.boundingRect(rect, textFlag, text)))
-        return QPair<QString, bool>(text, true);
-
-    QString str(text + "...");
-
-    while (true)
-    {
-        if (str.size() < 4)
-            break;
-
-        QRect boundingRect = fm.boundingRect(rect, textFlag, str);
-        if (rect.contains(boundingRect))
-            break;
-
-        str.remove(str.size() - 4, 1);
-    }
-
-    return QPair<QString, bool>(str, false);
 }
 
 void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
