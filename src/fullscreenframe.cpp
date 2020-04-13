@@ -142,6 +142,12 @@ void FullScreenFrame::initSize()
     QWidget::setFixedSize(geometry.size());
 
     initContentMargins();
+
+    if (m_frameRect != geometry) {
+        initBackground();
+    }
+
+    m_frameRect = geometry;
 }
 
 void FullScreenFrame::onSearchTextChanged(const QString &text)

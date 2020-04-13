@@ -76,6 +76,8 @@ private:
     QFileSystemWatcher *m_fileWatcher;
 
     QPixmap m_backgroundPixmap;
+
+    QRect m_frameRect;
 };
 
 #endif // FULLSCREENFRAME_H
