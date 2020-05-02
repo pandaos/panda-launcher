@@ -27,10 +27,12 @@ class DesktopInfo
 public:
     QString name;
     QString genericName;
-    QString comment;
     QString iconName;
     QString exec;
     QString filePath;
+    QString fileName;
+
+    QMap<QString, QString> comments;
 };
 
 #endif

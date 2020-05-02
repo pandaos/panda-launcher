@@ -72,12 +72,18 @@ void AppsManager::searchApp(const QString &keyword)
 
     if (!keyword.isEmpty()) {
         for (const DesktopInfo &info : m_appList) {
-            const QString &comment = info.comment;
             const QString &name = info.name;
+            const QString &fileName = info.fileName;
 
             if (name.contains(keyword, Qt::CaseInsensitive) ||
-                comment.contains(keyword, Qt::CaseInsensitive)) {
+                fileName.contains(keyword, Qt::CaseInsensitive)) {
                 m_searchList.append(info);
+            }
+
+            for (const QString &comment : info.comments) {
+                if (comment.contains(keyword, Qt::CaseInsensitive)) {
+                    m_searchList.append(info);
+                }
             }
         }
     }
@@ -160,7 +166,6 @@ void AppsManager::initData()
             continue;
 
         QString appName = desktop.value(QString("Name[%1]").arg(QLocale::system().name())).toString();
-        QString appComment = desktop.value(QString("Comment[%1]").arg(QLocale::system().name())).toString();;
         QString appExec = desktop.value("Exec").toString();
         QString appIcon = desktop.value("Icon").toString();
 
@@ -172,17 +177,20 @@ void AppsManager::initData()
         if (appName.isEmpty()) {
             appName = desktop.value("Name").toString();
         }
-        if (appComment.isEmpty()) {
-            appComment = desktop.value("Comment").toString();
-        }
 
         DesktopInfo appInfo;
         appInfo.name = appName;
         appInfo.iconName = appIcon;
         appInfo.exec = appExec;
         appInfo.filePath = info.filePath();
-        appInfo.comment = appComment;
+        appInfo.fileName = info.fileName();
         m_appList << appInfo;
+
+        for (const QString &key : desktop.allKeys()) {
+            if (key.startsWith("Comment")) {
+                appInfo.comments.insert(key, desktop.value(key).toString());
+            }
+        }
     }
 
     emit dataChanged();

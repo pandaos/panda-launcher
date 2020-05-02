@@ -42,7 +42,7 @@ public:
     bool save(const QString &fileName, const QString &group = "");
     void set(const QString &key, const QVariant &value);
     bool contains(const QString &key) const;
-    QStringList getKeys() const;
+    QStringList allKeys() const;
 
 protected:
     QMap<QString, QVariant> data;

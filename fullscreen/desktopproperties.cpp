@@ -127,7 +127,7 @@ void DesktopProperties::set(const QString &key, const QVariant &value)
     data.insert(key, value);
 }
 
-QStringList DesktopProperties::getKeys() const
+QStringList DesktopProperties::allKeys() const
 {
     return data.keys();
 }
