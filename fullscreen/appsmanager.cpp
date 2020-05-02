@@ -139,23 +139,25 @@ void AppsManager::sendToDock(const QModelIndex &idx)
 
 void AppsManager::initData()
 {
-    QDirIterator it(SYSTEMAPPPATH, QDir::Files);
+    const QString env = Utils::detectDesktopEnvironment();
 
-    while (it.hasNext()) {
-        it.next();
-
-        QString path = it.filePath();
-
-        if (QFileInfo(path).suffix() != "desktop")
+    QDir dir(SYSTEMAPPPATH);
+    for (const QFileInfo &info : dir.entryInfoList(QDir::Files)) {
+        if (info.suffix() != "desktop")
             continue;
 
-        DesktopProperties desktop(path, "Desktop Entry");
+        DesktopProperties desktop(info.filePath(), "Desktop Entry");
 
         // NoDisplay 与 OnlyShowIn 条件控制 Launcher 中显示
-        if (desktop.value("NoDisplay").toBool() ||
-            desktop.contains("NotShowIn")) {
-            continue;
+        if (desktop.contains("OnlyShowIn")) {
+            const QString &value = desktop.value("OnlyShowIn").toString();
+            if (!value.contains(env, Qt::CaseInsensitive)) {
+                continue;
+            }
         }
+
+        if (desktop.value("NoDisplay").toBool() || desktop.value("Hidden").toBool())
+            continue;
 
         QString appName = desktop.value(QString("Name[%1]").arg(QLocale::system().name())).toString();
         QString appComment = desktop.value(QString("Comment[%1]").arg(QLocale::system().name())).toString();;
@@ -178,7 +180,7 @@ void AppsManager::initData()
         appInfo.name = appName;
         appInfo.iconName = appIcon;
         appInfo.exec = appExec;
-        appInfo.filePath = path;
+        appInfo.filePath = info.filePath();
         appInfo.comment = appComment;
         m_appList << appInfo;
     }
