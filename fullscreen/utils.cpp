@@ -54,12 +54,12 @@ QPixmap Utils::renderSVG(const QString &path, const QSize &size)
     QImageReader reader;
     QPixmap pixmap;
     reader.setFileName(path);
+
     if (reader.canRead()) {
         reader.setScaledSize(size * devicePixelRatio);
         pixmap = QPixmap::fromImage(reader.read());
         pixmap.setDevicePixelRatio(devicePixelRatio);
-    }
-    else {
+    } else {
         pixmap.load(path);
     }
 

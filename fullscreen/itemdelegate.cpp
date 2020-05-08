@@ -86,14 +86,15 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
         painter->drawRoundedRect(rect, radius, radius);
     }
 
-    int iconSize = rect.width() * 0.4;
+    int iconSize = rect.width() * 0.55;
     QPixmap iconPixmap = getThemeIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
     int iconLeftMargin = (rect.width() - iconPixmap.width()) / 2;
-    int iconTopMargin = rect.height() * 0.12;
-    painter->drawPixmap(rect.x() + iconLeftMargin,
-                        rect.y() + iconTopMargin,
-                        iconPixmap.width(),
-                        iconPixmap.height(), iconPixmap);
+    int topMargin = rect.height() * 0.1;
+    const QRect iconRect(rect.x() + iconLeftMargin,
+                         rect.y() + topMargin,
+                         iconPixmap.width(),
+                         iconPixmap.height());
+    painter->drawPixmap(iconRect, iconPixmap);
 
     QTextOption appNameOption;
     appNameOption.setAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -102,11 +103,9 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     painter->setBrush(Qt::transparent);
     painter->setPen(Qt::black);
 
-    int textTopMargin = rect.width() * 0.63;
-    QRect textRect = QRect(rect.x(),
-                           rect.y() + textTopMargin,
-                           rect.width(),
-                           rect.height() - textTopMargin);
+    const QRect textRect(rect.x(),
+                         iconRect.bottom() + topMargin,
+                         rect.width(),rect.height());
 
     QString displayName = index.data(ListModel::AppNameRole).toString();
     QFontMetrics fm(painter->fontMetrics());
