@@ -87,8 +87,9 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint);
     setFocusPolicy(Qt::ClickFocus);
 
+    m_mainLayout->setSpacing(0);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
-    m_mainLayout->addSpacing(20);
+    m_mainLayout->addSpacing(10);
     m_mainLayout->addWidget(m_listView);
     setLayout(m_mainLayout);
 
@@ -172,26 +173,20 @@ void FullScreenFrame::onPopupMenu(const QPoint &p, const QModelIndex &idx)
 
 void FullScreenFrame::initContentMargins()
 {
-    QSettings settings(m_dockConfigPath, QSettings::IniFormat);
-    const int iconSize = settings.value("icon_size").toInt();
-    const int position = settings.value("position").toInt();
-    const int padding = 10;
     // 计算边缘 padding 值
-    const int edgePadding = qApp->primaryScreen()->size().width() * 0.05;
     QMargins margins;
+    const QRect screenRect = qApp->primaryScreen()->geometry();
+    const QRect availableRect = qApp->primaryScreen()->availableGeometry();
+    const int edgePadding = screenRect.size().width() * 0.05;
+    const int padding = 20;
+    int topMargin = availableRect.y() + padding;
+    int bottomMargin = screenRect.height() - availableRect.height() - availableRect.y() + padding;
+    int edgeMargin = availableRect.x() + edgePadding;
 
-    // dock position: bottom 0, left 1
-    if (position == 0) {
-        margins.setLeft(edgePadding);
-        margins.setRight(edgePadding);
-        margins.setBottom(iconSize + padding * 4);
-        margins.setTop(50);
-    } else {
-        margins.setLeft(edgePadding);
-        margins.setRight(edgePadding);
-        margins.setBottom(70);
-        margins.setTop(50);
-    }
+    margins.setLeft(edgeMargin);
+    margins.setRight(edgeMargin);
+    margins.setTop(topMargin);
+    margins.setBottom(bottomMargin);
 
     m_mainLayout->setContentsMargins(margins);
     m_calcUtil->setMargins(margins);
@@ -219,9 +214,14 @@ void FullScreenFrame::initBackground()
 
 void FullScreenFrame::onConfigFileChanged(const QString &filePath)
 {
-    if (filePath == m_dockConfigPath) {
-        QtConcurrent::run(this, &FullScreenFrame::initSize);
-    }
+    // Since Qt 5.4, QSettings uses QSaveFile to save the config files.
+    // https://github.com/qtproject/qtbase/commit/8d15068911d7c0ba05732e2796aaa7a90e34a6a1#diff-e691c0405f02f3478f4f50a27bdaecde
+    // QSaveFile will save the content to a new temp file, and replace the old file later.
+    bool fileDeleted = !m_fileWatcher->files().contains(m_dockConfigPath);
+    if (fileDeleted)
+        m_fileWatcher->addPath(m_dockConfigPath);
+
+    QtConcurrent::run(this, &FullScreenFrame::initSize);
 }
 
 void FullScreenFrame::mousePressEvent(QMouseEvent *e)
