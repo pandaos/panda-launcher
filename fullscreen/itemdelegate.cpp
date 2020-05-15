@@ -78,15 +78,16 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
                             QPainter::TextAntialiasing |
                             QPainter::SmoothPixmapTransform);
     painter->setPen(Qt::transparent);
+    const qreal ratio = option.widget->devicePixelRatioF();
 
     const bool isCurrent = index == m_currentIndex;
     if (isCurrent) {
-        int radius = rect.width() * 0.1;
+        const qreal radius = rect.width() * 0.1;
         painter->setBrush(QColor(0, 0, 0, 50));
         painter->drawRoundedRect(rect, radius, radius);
     }
 
-    int iconSize = rect.width() * 0.55;
+    int iconSize = rect.width() / ratio * 0.55;
     QPixmap iconPixmap = getThemeIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
     int iconLeftMargin = (rect.width() - iconPixmap.width()) / 2;
     int topMargin = rect.height() * 0.1;
