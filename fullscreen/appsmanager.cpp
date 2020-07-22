@@ -109,19 +109,19 @@ void AppsManager::showRightMenu(const QPoint &p, const QModelIndex &idx)
 {
     QMenu *menu = new QMenu;
     QAction *openAction = new QAction(tr("Open"), this);
-    QAction *uninstallAction = new QAction(tr("Uninstall"), this);
-    QAction *dockAction = new QAction(tr("Send to dock"), this);
+    // QAction *uninstallAction = new QAction(tr("Uninstall"), this);
+    // QAction *dockAction = new QAction(tr("Send to dock"), this);
 
     connect(openAction, &QAction::triggered, this, [=] { launchApp(idx); });
 
-    connect(dockAction, &QAction::triggered, this, [=] { sendToDock(idx); });
+    // connect(dockAction, &QAction::triggered, this, [=] { sendToDock(idx); });
 
     // todo: auto start, uninstall
 
     menu->addAction(openAction);
-    menu->addAction(uninstallAction);
-    menu->addSeparator();
-    menu->addAction(dockAction);
+    // menu->addAction(uninstallAction);
+    // menu->addSeparator();
+    // menu->addAction(dockAction);
 
     menu->move(p);
     menu->exec();
