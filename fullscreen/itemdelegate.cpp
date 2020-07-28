@@ -103,6 +103,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
 
     painter->setBrush(Qt::transparent);
     painter->setPen(Qt::black);
+    painter->setFont(qApp->font());
 
     const QRect textRect(rect.x(),
                          iconRect.bottom() + topMargin,

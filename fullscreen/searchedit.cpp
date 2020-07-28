@@ -26,18 +26,10 @@ SearchEdit::SearchEdit(QWidget *parent)
     m_floatWidget->setLayout(floatLayout);
     m_floatWidget->setFixedHeight(30);
 
-    QFontMetrics fm(m_placeholderText->font());
-    m_placeholderText->setFixedWidth(fm.width(m_placeholderText->text()) + 10);
-//    m_placeholderText->setForegroundRole(QPalette::BrightText);
-    m_floatWidget->setFixedWidth(m_searchIcon->width() + m_placeholderText->width() + 5);
-
-//    QHBoxLayout *layout = new QHBoxLayout;
-//    layout->addStretch();
-//    layout->addWidget(m_floatWidget);
-//    setLayout(layout);
+    updateFont();
 
     setAttribute(Qt::WA_TranslucentBackground);
-    setTextMargins(30, 0, 5, 0);
+    // setTextMargins(30, 0, 5, 0);
     setFocusPolicy(Qt::ClickFocus);
     setFixedHeight(30);
     setFixedWidth(300);
@@ -53,13 +45,16 @@ void SearchEdit::normalMode()
     QLineEdit::clearFocus();
 
     m_placeholderText->show();
+    m_searchIcon->show();
     m_floatWidget->move(rect().center() - m_floatWidget->rect().center());
 }
 
 void SearchEdit::editMode()
 {
     m_placeholderText->hide();
-    m_floatWidget->move(-16 - 6, 0);
+    m_searchIcon->hide();
+    // m_floatWidget->move(-16 - 6, 0);
+    m_floatWidget->move(0, 0);
 }
 
 bool SearchEdit::event(QEvent *e)
@@ -67,6 +62,9 @@ bool SearchEdit::event(QEvent *e)
     switch (e->type()) {
     case QEvent::FocusIn:
         editMode();
+        break;
+    case QEvent::ApplicationFontChange:
+        updateFont();
         break;
     default:
         break;
@@ -92,4 +90,11 @@ void SearchEdit::onTextChanged()
     if (!this->text().isEmpty()) {
         this->setFocus();
     }
+}
+
+void SearchEdit::updateFont()
+{
+    QFontMetrics fm(m_placeholderText->font());
+    m_placeholderText->setFixedWidth(fm.width(m_placeholderText->text()) + 10);
+    m_floatWidget->setFixedWidth(m_searchIcon->width() + m_placeholderText->width() + 10);
 }

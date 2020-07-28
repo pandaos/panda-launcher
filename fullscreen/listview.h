@@ -35,6 +35,7 @@ signals:
     void requestPopupMenu(const QPoint &p, const QModelIndex &idx);
 
 protected:
+    bool event(QEvent *e);
     void enterEvent(QEvent *e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;

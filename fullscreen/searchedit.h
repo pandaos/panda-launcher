@@ -21,6 +21,7 @@ protected:
 private:
     void moveFloatWidget();
     void onTextChanged();
+    void updateFont();
 
 private:
     QLabel *m_searchIcon;

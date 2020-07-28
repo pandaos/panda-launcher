@@ -57,6 +57,15 @@ ListView::~ListView()
 {
 }
 
+bool ListView::event(QEvent *e)
+{
+    if (e->type() == QEvent::ApplicationFontChange) {
+        QListView::update();
+    }
+
+    return QListView::event(e);
+}
+
 void ListView::enterEvent(QEvent *e)
 {
     QListView::enterEvent(e);
