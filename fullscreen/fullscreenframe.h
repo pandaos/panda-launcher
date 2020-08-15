@@ -21,6 +21,7 @@
 #define FULLSCREENFRAME_H
 
 #include <QWidget>
+#include <QLineEdit>
 #include <QVBoxLayout>
 #include <QFileSystemWatcher>
 #include <QSettings>
@@ -29,7 +30,6 @@
 #include "listmodel.h"
 #include "itemdelegate.h"
 #include "appsmanager.h"
-#include "searchedit.h"
 #include "calcutil.h"
 
 class FullScreenFrame : public QWidget
@@ -70,7 +70,7 @@ private:
     ListModel *m_listModel;
     ItemDelegate *m_itemDelegate;
     AppsManager *m_appsManager;
-    SearchEdit *m_searchEdit;
+    QLineEdit *m_searchEdit;
     CalcUtil *m_calcUtil;
 
     QString m_dockConfigPath;

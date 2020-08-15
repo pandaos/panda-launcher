@@ -11,7 +11,6 @@ set(SOURCES applicationadaptor.cpp
             listmodel.cpp
             listview.cpp
             main.cpp
-            searchedit.cpp
             utils.cpp)
 set(RESOURCES resources.qrc)
 

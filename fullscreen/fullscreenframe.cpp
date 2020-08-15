@@ -46,7 +46,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
       m_listModel(new ListModel),
       m_itemDelegate(new ItemDelegate),
       m_appsManager(AppsManager::instance()),
-      m_searchEdit(new SearchEdit),
+      m_searchEdit(new QLineEdit),
       m_calcUtil(CalcUtil::instance()),
       m_fileWatcher(new QFileSystemWatcher(this))
 {
@@ -105,6 +105,10 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     m_listView->installEventFilter(this);
     m_listView->viewport()->installEventFilter(this);
     m_searchEdit->installEventFilter(this);
+    m_searchEdit->setPlaceholderText(tr("Search App"));
+    m_searchEdit->setFixedHeight(30);
+    m_searchEdit->setFixedWidth(300);
+    m_searchEdit->setFocusPolicy(Qt::ClickFocus);
     hideLauncher();
 
     connect(qApp->primaryScreen(), &QScreen::geometryChanged, this, &FullScreenFrame::initSize, Qt::QueuedConnection);
@@ -117,7 +121,7 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     connect(m_itemDelegate, &ItemDelegate::requestUpdate, m_listView, static_cast<void (ListView::*)(const QModelIndex&)>(&ListView::update));
 
     connect(m_appsManager, &AppsManager::requestHideLauncher, this, &FullScreenFrame::hideLauncher);
-    connect(m_searchEdit, &SearchEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
+    connect(m_searchEdit, &QLineEdit::textChanged, this, &FullScreenFrame::onSearchTextChanged);
 }
 
 void FullScreenFrame::showLauncher()
@@ -259,7 +263,6 @@ void FullScreenFrame::showEvent(QShowEvent *e)
     KWindowSystem::setState(winId(), NET::SkipSwitcher);
     m_searchEdit->clearFocus();
     m_searchEdit->clear();
-    m_searchEdit->normalMode();
 
     initSize();
 
@@ -298,9 +301,13 @@ bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
         return true;
     }
 
+    if (e->key() == Qt::Key_Backspace) {
+        m_searchEdit->backspace();
+        return true;
+    }
+
     if ((e->key() <= Qt::Key_Z && e->key() >= Qt::Key_A) ||
-        (e->key() <= Qt::Key_9 && e->key() >= Qt::Key_0) ||
-        (e->key() == Qt::Key_Space)) {
+        (e->key() <= Qt::Key_9 && e->key() >= Qt::Key_0)) {
 
         if (ctrlPressed && e->key() == Qt::Key_A) {
             m_searchEdit->selectAll();
@@ -323,17 +330,6 @@ bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
         }
 
         const char ch = e->text()[0].toLatin1();
-
-        // -1 means backspace key pressed
-        if (ch == -1) {
-            m_searchEdit->backspace();
-            return true;
-        }
-
-        if (!m_searchEdit->selectedText().isEmpty()) {
-            m_searchEdit->backspace();
-        }
-
         m_searchEdit->setText(m_searchEdit->text() + ch);
 
         return true;
