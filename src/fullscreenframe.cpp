@@ -35,6 +35,7 @@
 #include <QDBusMessage>
 #include <QDBusReply>
 #include <QDBusServiceWatcher>
+#include <QImageReader>
 
 #include <KF5/KWindowSystem/KWindowEffects>
 #include <KF5/KWindowSystem/KWindowSystem>
@@ -205,13 +206,36 @@ void FullScreenFrame::initBackground()
     if (!iface.isValid())
         return;
 
-    const QSize &size = qApp->primaryScreen()->size() * qApp->primaryScreen()->devicePixelRatio();
-    m_backgroundPixmap.load(iface.property("wallpaper").toString());
-    m_backgroundPixmap = m_backgroundPixmap.scaled(size,
-                                                   Qt::IgnoreAspectRatio,
-                                                   Qt::SmoothTransformation);
-    m_backgroundPixmap.setDevicePixelRatio(devicePixelRatioF());
-    m_backgroundPixmap = Utils::blurPixmap(m_backgroundPixmap, 200);
+    QRect screenRect = qApp->primaryScreen()->geometry();
+    QString fileName = iface.property("wallpaper").toString();
+    QImage image;
+    QImageReader reader(fileName);
+    QSize origSize = reader.size();
+
+    if (origSize.isValid()) {
+        QSize desiredSize = origSize;
+        Qt::AspectRatioMode mode = Qt::KeepAspectRatioByExpanding;
+        desiredSize.scale(screenRect.width(), screenRect.height(), mode);
+        QImage image(fileName);
+        image = image.scaled(desiredSize.width(), desiredSize.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+        if (!image.isNull()) {
+            QPixmap pixmap(screenRect.size());
+            QPainter painter(&pixmap);
+            int x = (screenRect.width() - image.width()) / 2;
+            int y = (screenRect.height() - image.height()) / 2;
+            painter.drawImage(x, y, image);
+            m_backgroundPixmap = pixmap;
+        }
+    }
+
+    // const QSize &size = qApp->primaryScreen()->size() * qApp->primaryScreen()->devicePixelRatio();
+    // m_backgroundPixmap.load(iface.property("wallpaper").toString());
+    // m_backgroundPixmap = m_backgroundPixmap.scaled(size,
+    //                                                Qt::IgnoreAspectRatio,
+    //                                                Qt::SmoothTransformation);
+    // m_backgroundPixmap.setDevicePixelRatio(devicePixelRatioF());
+    // m_backgroundPixmap = Utils::blurPixmap(m_backgroundPixmap, 200);
 
     FullScreenFrame::update();
 }
