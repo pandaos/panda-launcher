@@ -83,8 +83,13 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     const bool isCurrent = index == m_currentIndex;
     if (isCurrent) {
         const qreal radius = rect.width() * 0.1;
+        painter->save();
         painter->setBrush(QColor(0, 0, 0, 50));
         painter->drawRoundedRect(rect, radius, radius);
+        painter->setBrush(Qt::transparent);
+        painter->setPen(QColor(255, 255, 255, 50));
+        painter->drawRoundedRect(rect.adjusted(1, 1, -1, -1), radius, radius);
+        painter->restore();
     }
 
     int iconSize = rect.width() / ratio * 0.55;
