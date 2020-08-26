@@ -21,6 +21,7 @@
 #include "desktopproperties.h"
 #include "listmodel.h"
 #include "utils.h"
+#include <QApplication>
 #include <QDirIterator>
 #include <QStandardPaths>
 #include <QSettings>
@@ -140,6 +141,34 @@ void AppsManager::sendToDock(const QModelIndex &idx)
     if (!list.contains(appExec)) {
         list.append(appExec);
         settings.setValue("appname", QVariant::fromValue(list));
+    }
+}
+
+const QPixmap AppsManager::getThemeIcon(const QString &iconName, const int size)
+{
+    const auto ratio = qApp->devicePixelRatio();
+    QPixmap pixmap;
+
+    const QIcon icon = QIcon::fromTheme(iconName, QIcon::fromTheme("application-x-desktop"));
+    pixmap = icon.pixmap(QSize(size, size));
+
+    if (qFuzzyCompare(pixmap.devicePixelRatioF(), 1.0)) {
+        pixmap = pixmap.scaled(QSize(size, size) * ratio, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        pixmap.setDevicePixelRatio(ratio);
+
+        m_iconCache[iconName] = pixmap;
+    }
+
+    return pixmap;
+}
+
+const QPixmap AppsManager::getIcon(const QString &key, const int size)
+{
+    if (m_iconCache.contains(key) && !m_iconCache[key].isNull()) {
+        return m_iconCache[key];
+    } else {
+        const QPixmap &pixmap = getThemeIcon(key, size);
+        return pixmap;
     }
 }
 

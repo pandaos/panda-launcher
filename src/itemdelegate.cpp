@@ -19,6 +19,7 @@
 
 #include "itemdelegate.h"
 #include "listmodel.h"
+#include "appsmanager.h"
 #include <QApplication>
 
 const QRect itemBoundingRect(const QRect &itemRect)
@@ -33,22 +34,6 @@ const QRect itemBoundingRect(const QRect &itemRect)
         return itemRect - QMargins(sub, 0, sub, 0);
     else
         return itemRect - QMargins(0, 0, 0, sub * 2);
-}
-
-const QPixmap getThemeIcon(const QString &iconName, const int size)
-{
-    const auto ratio = qApp->devicePixelRatio();
-    QPixmap pixmap;
-
-    const QIcon icon = QIcon::fromTheme(iconName, QIcon::fromTheme("application-x-desktop"));
-    pixmap = icon.pixmap(QSize(size, size));
-
-    if (qFuzzyCompare(pixmap.devicePixelRatioF(), 1.0)) {
-        pixmap = pixmap.scaled(QSize(size, size) * ratio, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        pixmap.setDevicePixelRatio(ratio);
-    }
-
-    return pixmap;
 }
 
 ItemDelegate::ItemDelegate(QObject *parent) :
@@ -93,7 +78,7 @@ void ItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
     }
 
     int iconSize = rect.width() / ratio * 0.55;
-    QPixmap iconPixmap = getThemeIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
+    const QPixmap iconPixmap = AppsManager::instance()->getIcon(index.data(ListModel::AppIconRole).toString(), iconSize);
     int iconLeftMargin = (rect.width() - iconPixmap.width()) / 2;
     int topMargin = rect.height() * 0.1;
     const QRect iconRect(rect.x() + iconLeftMargin,

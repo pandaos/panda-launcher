@@ -55,6 +55,9 @@ public:
 
     void sendToDock(const QModelIndex &idx);
 
+    const QPixmap getThemeIcon(const QString &iconName, const int size);
+    const QPixmap getIcon(const QString &key, const int size);
+
 signals:
     void dataChanged();
     void modeChanged();
@@ -67,6 +70,7 @@ private:
 private:
     QList<DesktopInfo> m_appList;
     QList<DesktopInfo> m_searchList;
+    QMap<QString, QPixmap> m_iconCache;
     QFileSystemWatcher *m_watcher;
     Mode m_mode;
 };

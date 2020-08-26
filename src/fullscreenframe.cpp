@@ -83,10 +83,12 @@ FullScreenFrame::FullScreenFrame(QWidget *parent)
     });
 
     // Init attributes.
-    setAttribute(Qt::WA_TranslucentBackground, false);
-    setAttribute(Qt::WA_NoSystemBackground, false);
+    setAttribute(Qt::WA_TranslucentBackground);
+    // setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowFlags(Qt::FramelessWindowHint);
     setFocusPolicy(Qt::ClickFocus);
+
+    KWindowEffects::enableBlurBehind(winId(), true);
 
     m_mainLayout->setSpacing(0);
     m_mainLayout->addWidget(m_searchEdit, 0, Qt::AlignHCenter);
@@ -200,6 +202,7 @@ void FullScreenFrame::initContentMargins()
 
 void FullScreenFrame::initBackground()
 {
+    return;
     QDBusConnection dbus = QDBusConnection::sessionBus();
     QDBusInterface iface(QLatin1String("org.panda.files"), QStringLiteral("/Files"), QLatin1String("org.panda.Files"), dbus, this);
 
@@ -226,6 +229,8 @@ void FullScreenFrame::initBackground()
             int y = (screenRect.height() - image.height()) / 2;
             painter.drawImage(x, y, image);
             m_backgroundPixmap = pixmap;
+
+            image = QImage();
         }
     }
 
@@ -295,15 +300,15 @@ void FullScreenFrame::showEvent(QShowEvent *e)
 void FullScreenFrame::paintEvent(QPaintEvent *e)
 {
     QPainter painter(this);
-    //QColor color("#000000");
-    //color.setAlpha(80);
-    //painter.fillRect(rect(), color);
+    QColor color("#000000");
+    color.setAlpha(80);
+    painter.fillRect(rect(), color);
 
-    QScreen const *s = qApp->primaryScreen();
-    const QRect &geom = s->geometry();
-    QRect tr(QPoint(0, 0), geom.size());
-    painter.drawPixmap(tr, m_backgroundPixmap, QRect(tr.topLeft(),
-                                                     tr.size() * m_backgroundPixmap.devicePixelRatioF()));
+    // QScreen const *s = qApp->primaryScreen();
+    // const QRect &geom = s->geometry();
+    // QRect tr(QPoint(0, 0), geom.size());
+    // painter.drawPixmap(tr, m_backgroundPixmap, QRect(tr.topLeft(),
+    //                                                  tr.size() * m_backgroundPixmap.devicePixelRatioF()));
 }
 
 bool FullScreenFrame::event(QEvent *e)
