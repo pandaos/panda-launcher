@@ -359,6 +359,9 @@ bool FullScreenFrame::handleKeyEvent(QKeyEvent *e)
         }
 
         const char ch = e->text()[0].toLatin1();
+        if (m_searchEdit->hasSelectedText())
+            m_searchEdit->backspace();
+
         m_searchEdit->setText(m_searchEdit->text() + ch);
 
         return true;
